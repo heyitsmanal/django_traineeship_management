@@ -1,0 +1,41 @@
+{% extends 'student_template/base_template.html' %}
+
+{% block page_title %}
+    Notes for {{ student_name }}
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="container mt-4">
+    {% for course_notes in all_notes %}
+        <h3>{{ course_notes.course_name }}</h3>
+        <div class="table-responsive">
+            <table class="table table-light" style="width: 80%; margin: 0 auto;">
+                <tbody>
+                    <tr>
+                        <td>Assignment Note:</td>
+                        <td class="text-center">{{ course_notes.assignment_note }}</td>
+                    </tr>
+                    <tr>
+                        <td>Exam Note:</td>
+                        <td class="text-center">{{ course_notes.exam_note }}</td>
+                    </tr>
+                    <tr>
+                        <td>Absences:</td>
+                        <td class="text-center">{{ course_notes.absent_count }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive mt-4">
+            <table class="table table-light table-bordered" style="width: 50%; margin: 0 auto;">
+                <tbody>
+                    <tr class="font-weight-bold">
+                        <td>Final Result:</td>
+                        <td class="text-center" style="background-color: #d6d6d6;">{{ course_notes.final_result }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>
+{% endblock main_content %}

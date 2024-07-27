@@ -1,0 +1,14 @@
+.select-days-multiple {
+    width: 100%; /* Full width of the container */
+    max-width: 500px; /* Adjust max-width as needed */
+    height: auto; /* Adjust height as needed */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    margin-bottom: 1rem; /* Space below the select element */
+    overflow-y: auto; /* Add vertical scrollbar if needed */
+}
+
+/* Adjust the width of the single select dropdowns */
+.select-days {
+    width: 100%; /* Full width of the container */
+    max-width: 300px; /* Adjust max-width as needed */
+}

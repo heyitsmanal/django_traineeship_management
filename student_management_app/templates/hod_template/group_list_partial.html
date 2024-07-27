@@ -1,0 +1,23 @@
+{% comment %} <!-- hod_template/group_list_partial.html --> {% endcomment %}
+<table class="table table-striped">
+    <thead class="bg-primary">
+        <tr>
+            <th>Group ID</th>
+            <th>Day of Week + Category</th>
+            <th>Total Students</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in course_groups %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.day_of_week }} {{ item.category }}</td>
+                <td>{{ item.students_count }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No groups found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

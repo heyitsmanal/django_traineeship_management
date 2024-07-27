@@ -1,0 +1,43 @@
+{% extends 'hod_template/base_template.html' %}
+{% load static %}
+
+{% block page_title %}
+    Validated Projects
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="container mt-5">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Project Title</th>
+                <th>Student Name</th>
+                <th>Encadrant</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+                {% if project.student %}
+                    <tr>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.student.admin.first_name }} {{ project.student.admin.last_name }}</td>
+                        <td>{{ project.encadrant.get_full_name }}</td>
+                        <td>
+                            <a href="{% url 'generate_certificate' project.id %}" class="btn btn-primary">Generate Certificate</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No students found for this project.</td>
+                    </tr>
+                {% endif %}
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No projects found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock main_content %}

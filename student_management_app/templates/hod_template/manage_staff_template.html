@@ -1,4 +1,5 @@
 {% extends 'hod_template/base_template.html' %}
+{% load static %}
 
 {% block page_title %}
     Manage Staff
@@ -6,7 +7,7 @@
 
 {% block main_content %}
 
-{% load static %}
+
 
 <section class="content">
         <div class="container-fluid">
@@ -67,6 +68,9 @@
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Address</th>
+                                <th>Gender</th>
+                                <th>Profile Pic</th>
+                                <th>Course</th>
                                 <th>Last Login</th>
                                 <th>Date Joined</th>
                                 <th>Action</th>
@@ -81,6 +85,15 @@
                                 <td>{{ staff.admin.username }}</td>
                                 <td>{{ staff.admin.email }}</td>
                                 <td>{{ staff.address }}</td>
+                                <td>{{ staff.gender }}</td>
+                                <td>
+                                    {% if staff.profile_pic %}
+                                        <img src="{{ staff.profile_pic.url }}" alt="Profile Pic" style="width: 80px;" />
+                                    {% else %}
+                                        <img src="{% static 'media/nopicprofile.jfif' %}" alt="No Pic" style="width: 80px;" />
+                                    {% endif %}
+                                </td>
+                                <td>{{ staff.course.course_name }}</td>
                                 <td>{{ staff.admin.last_login }}</td>
                                 <td>{{ staff.admin.date_joined }}</td>
                                 <td>

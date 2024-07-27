@@ -1,0 +1,74 @@
+{% extends 'hod_template/base_template.html' %}
+{% load static %}
+
+{% block page_title %}
+    Manage Student Groups
+{% endblock page_title %}
+
+{% block main_content %}
+<a class="btn btn-primary ml-3" href="{% url 'add_group' %}" role="button">+ Add group</a> <br/>&nbsp;
+
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h3 class="card-title text-white">Student Groups</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Current Group</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{ student.admin.get_full_name }}</td>
+                                    <td>
+                                        {% if student.group %}
+                                            {{ student.group.day_of_week }} {{ student.group.category }} Group
+                                        {% else %}
+                                            Not Assigned
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{% url 'update_student_group' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="student_id" value="{{ student.id }}">
+                                            <div class="input-group">
+                                                <select class="form-control" name="group">
+                                                    <option value="">Select Group</option>
+                                                    {% for group in groups %}
+                                                        <option value="{{ group.id }}" {% if student.group and student.group.id == group.id %}selected{% endif %}>
+                                                            {{ group.day_of_week }} {{ group.category }} Group
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <button class="btn btn-primary ml-3" type="submit">Assign Group</button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock main_content %}

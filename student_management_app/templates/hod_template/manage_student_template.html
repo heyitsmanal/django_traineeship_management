@@ -68,9 +68,9 @@
                                 <th>Address</th>
                                 <th>Gender</th>
                                 <th>Profile Pic</th>
-                                <th>Start Year</th>
-                                <th>End Year</th>
-                                <th>Course</th>
+                                <th>preferred_category</th>
+                                <th>Grade</th>
+                                <th>Code_PPR</th>
                                 <th>Last Login</th>
                                 <th>Date Joined</th>
                                 <th>Action</th>
@@ -86,10 +86,10 @@
                                 <td>{{ student.admin.email }}</td>
                                 <td>{{ student.address }}</td>
                                 <td>{{ student.gender }}</td>
-                                <td> <img src="{{ student.profile_pic }}" style="width: 100px;" /> </td>
-                                <td>{{ student.session_year_id.session_start_year }}</td>
-                                <td>{{ student.session_year_id.session_end_year }}</td>
-                                <td>{{ student.course_id.course_name }}</td>
+                                <td> <img src="{{ student.profile_pic }}" style="width: 50px;height:50px;" /> </td>
+                                <td>{{ student.preferred_category }}</td>
+                                <td>{{ student.grade }}</td>
+                                <td>{{ student.code_PPR }}</td>
                                 <td>{{ student.admin.last_login }}</td>
                                 <td>{{ student.admin.date_joined }}</td>
                                 <td>

@@ -1,16 +1,37 @@
 
 from django.urls import path, include
+
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
-from .import HodViews, StaffViews, StudentViews
+from . import HodViews, StaffViews, StudentViews
 
 
 urlpatterns = [
-    path('', views.loginPage, name="login"),
     # path('accounts/', include('django.contrib.auth.urls')),
+  
+    path('', views.homepage, name="homepage"),
+    path('login/', views.loginPage, name="login"),
     path('doLogin/', views.doLogin, name="doLogin"),
+    path('enroll-student/', views.enroll_student, name='enroll_student'),
+    path('enroll-success/', views.enroll_success, name='enroll_success'),
     path('get_user_details/', views.get_user_details, name="get_user_details"),
+  
+
+
+
+    path('manage_timetable/', HodViews.manage_timetable, name="manage_timetable"),
     path('logout_user/', views.logout_user, name="logout_user"),
     path('admin_home/', HodViews.admin_home, name="admin_home"),
+    path('add_student/', HodViews.add_student, name="add_student"),
+    path('add_student_save/', HodViews.add_student_save, name="add_student_save"),
+    path('manage_student/', HodViews.manage_student, name="manage_student"),
+    path('edit_student/<student_id>/', HodViews.edit_student, name="edit_student"),
+    path('edit_student_save/', HodViews.edit_student_save, name="edit_student_save"),
+    path('delete_student/<student_id>/', HodViews.delete_student, name="delete_student"),
+    path('check_email_exist/', HodViews.check_email_exist, name='check_email_exist'),
+    path('check_code_PPR_exist/', HodViews.check_code_PPR_exist, name='check_code_PPR_exist'),
+    path('check_username_exist/', HodViews.check_username_exist, name='check_username_exist'),
     path('add_staff/', HodViews.add_staff, name="add_staff"),
     path('add_staff_save/', HodViews.add_staff_save, name="add_staff_save"),
     path('manage_staff/', HodViews.manage_staff, name="manage_staff"),
@@ -23,71 +44,55 @@ urlpatterns = [
     path('edit_course/<course_id>/', HodViews.edit_course, name="edit_course"),
     path('edit_course_save/', HodViews.edit_course_save, name="edit_course_save"),
     path('delete_course/<course_id>/', HodViews.delete_course, name="delete_course"),
-    path('manage_session/', HodViews.manage_session, name="manage_session"),
-    path('add_session/', HodViews.add_session, name="add_session"),
-    path('add_session_save/', HodViews.add_session_save, name="add_session_save"),
-    path('edit_session/<session_id>', HodViews.edit_session, name="edit_session"),
-    path('edit_session_save/', HodViews.edit_session_save, name="edit_session_save"),
-    path('delete_session/<session_id>/', HodViews.delete_session, name="delete_session"),
-    path('add_student/', HodViews.add_student, name="add_student"),
-    path('add_student_save/', HodViews.add_student_save, name="add_student_save"),
-    path('edit_student/<student_id>', HodViews.edit_student, name="edit_student"),
-    path('edit_student_save/', HodViews.edit_student_save, name="edit_student_save"),
-    path('manage_student/', HodViews.manage_student, name="manage_student"),
-    path('delete_student/<student_id>/', HodViews.delete_student, name="delete_student"),
-    path('add_subject/', HodViews.add_subject, name="add_subject"),
-    path('add_subject_save/', HodViews.add_subject_save, name="add_subject_save"),
-    path('manage_subject/', HodViews.manage_subject, name="manage_subject"),
-    path('edit_subject/<subject_id>/', HodViews.edit_subject, name="edit_subject"),
-    path('edit_subject_save/', HodViews.edit_subject_save, name="edit_subject_save"),
-    path('delete_subject/<subject_id>/', HodViews.delete_subject, name="delete_subject"),
-    path('check_email_exist/', HodViews.check_email_exist, name="check_email_exist"),
-    path('check_username_exist/', HodViews.check_username_exist, name="check_username_exist"),
-    path('student_feedback_message/', HodViews.student_feedback_message, name="student_feedback_message"),
-    path('student_feedback_message_reply/', HodViews.student_feedback_message_reply, name="student_feedback_message_reply"),
-    path('staff_feedback_message/', HodViews.staff_feedback_message, name="staff_feedback_message"),
-    path('staff_feedback_message_reply/', HodViews.staff_feedback_message_reply, name="staff_feedback_message_reply"),
-    path('student_leave_view/', HodViews.student_leave_view, name="student_leave_view"),
-    path('student_leave_approve/<leave_id>/', HodViews.student_leave_approve, name="student_leave_approve"),
-    path('student_leave_reject/<leave_id>/', HodViews.student_leave_reject, name="student_leave_reject"),
-    path('staff_leave_view/', HodViews.staff_leave_view, name="staff_leave_view"),
-    path('staff_leave_approve/<leave_id>/', HodViews.staff_leave_approve, name="staff_leave_approve"),
-    path('staff_leave_reject/<leave_id>/', HodViews.staff_leave_reject, name="staff_leave_reject"),
     path('admin_view_attendance/', HodViews.admin_view_attendance, name="admin_view_attendance"),
-    path('admin_get_attendance_dates/', HodViews.admin_get_attendance_dates, name="admin_get_attendance_dates"),
-    path('admin_get_attendance_student/', HodViews.admin_get_attendance_student, name="admin_get_attendance_student"),
+    path('admin_get_attendance_courses/', HodViews.admin_get_attendance_courses, name="admin_get_attendance_courses"),
     path('admin_profile/', HodViews.admin_profile, name="admin_profile"),
     path('admin_profile_update/', HodViews.admin_profile_update, name="admin_profile_update"),
+    path('manage_staff_groups/', HodViews.manage_staff_groups, name='manage_staff_groups'),
+    path('manage_student_groups/', HodViews.manage_student_groups, name='manage_student_groups'),
+    path('update_student_group/', HodViews.update_student_group, name='update_student_group'),
+    path('update_staff_group/', HodViews.update_staff_group, name='update_staff_group'),
+    path('manage_groups/', HodViews.manage_groups, name='manage_groups'),
+    path('group/<int:group_id>/', HodViews.group_detail, name='group_detail'),
+    path('manage-student-groups/', HodViews.manage_student_groups, name='manage_student_groups'),
+    path('update-student-group/', HodViews.update_student_group, name='update_student_group'),
+    path('add_group/', HodViews.add_group, name='add_group'),
+    path('generate_certificate/<int:project_id>/', HodViews.generate_certificate_view, name='generate_certificate'),
+    path('print_certificates/', HodViews.print_certificate_template, name='print_certificate_template'),
+    path('admin_get_group_students/', HodViews.admin_get_group_students, name='admin_get_group_students'),
+
     
 
 
     # URLS for Staff
     path('staff_home/', StaffViews.staff_home, name="staff_home"),
-    path('staff_take_attendance/', StaffViews.staff_take_attendance, name="staff_take_attendance"),
-    path('get_students/', StaffViews.get_students, name="get_students"),
+    path('staff_take_attendance/', StaffViews.staff_take_attendance, name='staff_take_attendance'),
+    path('get_students/<int:groupid>/', StaffViews.get_students, name='get_students'),
     path('save_attendance_data/', StaffViews.save_attendance_data, name="save_attendance_data"),
     path('staff_update_attendance/', StaffViews.staff_update_attendance, name="staff_update_attendance"),
-    path('get_attendance_dates/', StaffViews.get_attendance_dates, name="get_attendance_dates"),
-    path('get_attendance_student/', StaffViews.get_attendance_student, name="get_attendance_student"),
-    path('update_attendance_data/', StaffViews.update_attendance_data, name="update_attendance_data"),
-    path('staff_apply_leave/', StaffViews.staff_apply_leave, name="staff_apply_leave"),
-    path('staff_apply_leave_save/', StaffViews.staff_apply_leave_save, name="staff_apply_leave_save"),
-    path('staff_feedback/', StaffViews.staff_feedback, name="staff_feedback"),
-    path('staff_feedback_save/', StaffViews.staff_feedback_save, name="staff_feedback_save"),
     path('staff_profile/', StaffViews.staff_profile, name="staff_profile"),
     path('staff_profile_update/', StaffViews.staff_profile_update, name="staff_profile_update"),
-    path('staff_add_result/', StaffViews.staff_add_result, name="staff_add_result"),
-    path('staff_add_result_save/', StaffViews.staff_add_result_save, name="staff_add_result_save"),
+    path('add_note/', StaffViews.staff_add_note, name="add_note"),
+    path('save_notes_data/', StaffViews.save_notes_data, name="save_notes_data"),
+    path('select_course_group/', StaffViews.select_course_group, name='select_course_group'),
+    path('get_groups/<int:course_id>/', StaffViews.get_groups, name='get_groups'),
+    path('list_attendances/<int:course_id>/<int:group_id>/', StaffViews.list_attendances, name='list_attendances'),
+    path('view_attendance/<int:attendance_id>/', StaffViews.view_attendance, name='view_attendance'),
+    path('validate_project/', StaffViews.validate_project, name='validate_project'),
+    path('delete_project/<int:project_id>/', StaffViews.delete_project, name='delete_project'),
+
+    # path('search_students/', StaffViews.search_students, name='search_students'),
+
+
 
     # URSL for Student
     path('student_home/', StudentViews.student_home, name="student_home"),
     path('student_view_attendance/', StudentViews.student_view_attendance, name="student_view_attendance"),
-    path('student_view_attendance_post/', StudentViews.student_view_attendance_post, name="student_view_attendance_post"),
-    path('student_apply_leave/', StudentViews.student_apply_leave, name="student_apply_leave"),
-    path('student_apply_leave_save/', StudentViews.student_apply_leave_save, name="student_apply_leave_save"),
-    path('student_feedback/', StudentViews.student_feedback, name="student_feedback"),
-    path('student_feedback_save/', StudentViews.student_feedback_save, name="student_feedback_save"),
     path('student_profile/', StudentViews.student_profile, name="student_profile"),
     path('student_profile_update/', StudentViews.student_profile_update, name="student_profile_update"),
-    path('student_view_result/', StudentViews.student_view_result, name="student_view_result"),
+    path('certificate/preview/<int:certificate_id>/', StudentViews.preview_certificate, name='preview_certificate'),
+    path('notes/', StudentViews.get_student_notes, name='get_student_notes'),
+
+
+    # path('student_view_result/', StudentViews.student_view_result, name="student_view_result"),
 ]

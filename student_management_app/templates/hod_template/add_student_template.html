@@ -38,7 +38,8 @@
     {% comment %} Checking if email and username already exists or not usin Ajax {% endcomment %}
 
     <script>
-        $(document).ready(function(){
+    $(document).ready(function(){
+        
             // keyup event will be triggered when user leaves keyboard
             $("#id_email").keyup(function(){
                 var email = $(this).val();
@@ -103,7 +104,38 @@
                 }
                 
             })
-        })
+                // keyup event will be triggered when user leaves keyboard
+        $("#id_code_PPR").keyup(function(){
+            var code_PPR = $(this).val();
+
+            if(code_PPR != ""){
+                $.ajax({
+                    url: '{% url 'check_code_PPR_exist' %}',
+                    type: 'POST',
+                    data: {code_PPR: code_PPR},
+                })
+                .done(function(response){
+                    //console.log(response);
+
+                    if(response == "True"){
+                        $(".code_PPR_error").remove();
+                        $("<span class='code_PPR_error' style='color: red; padding: 5px; font-weight: bold;'> Code PPR Not Available. </span>").insertAfter("#id_code_PPR");
+                    }
+                    else{
+                        $(".code_PPR_error").remove();
+                        $("<span class='code_PPR_error' style='color: green; padding: 5px; font-weight: bold;'> Code PPR Available. </span>").insertAfter("#id_code_PPR");
+                    }
+                })
+                .fail(function(){
+                    console.log("Failed");
+                });
+            }
+            else{
+                $(".code_PPR_error").remove();
+            }
+            
+        });
+    })
     </script>
 
   {% endblock custom_js %}

@@ -8,10 +8,10 @@ And if you like this project then ADD a STAR ⭐️ to this project 👆
 
 ### A. Admin Users Can
 
-1. See Overall Summary Charts of Stuudents Performance, Staffs Perfomrances, Courses, Subjects, Leave, etc.
+1. See Overall Summary Charts of Stuudents Performance, Staffs Perfomrances, Courses, etc.
 2. Manage Staffs (Add, Update and Delete)
 3. Manage Students (Add, Update and Delete)
-4. Manage Course (Add, Update and Delete)
+4. Manage Courses (Add, Update and Delete)
 5. Manage Subjects (Add, Update and Delete)
 6. Manage Sessions (Add, Update and Delete)
 7. View Student Attendance

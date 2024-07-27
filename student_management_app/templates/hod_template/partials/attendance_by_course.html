@@ -1,0 +1,154 @@
+{% block style %}
+    <style>
+        @media print {
+            /* Hide elements that should not appear in the print */
+            .no-print {
+                display: none;
+            }
+        
+            /* Ensure that the layout matches the screen layout */
+            .custom-select {
+                width: 100%; /* Ensures select elements are correctly sized */
+            }
+        
+            /* Adjust other styles as needed */
+            .card {
+                border: 1px solid #ccc;
+                border-radius: 0;
+            }
+        
+            .card-header {
+                font-size: 18px;
+                font-weight: bold;
+            }
+        
+            .alert {
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 0;
+            }
+        
+            /* Additional print-specific styles can be added here */
+        }
+    </style>
+{% endblock style %}
+
+<div id="attendance_data_block">
+    <!-- Attendance data will be inserted here -->
+    {% if attendance %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Groupid</th>
+                    <th>Group timing</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance %}
+                    <tr>
+                        <td>{{ record.attendance_date }}</td>
+                        <td> {{record.group.id}}</td>
+                        <td><a href="#" class="view-group" data-group-id="{{ record.group.id }}">{{ record.group.day_of_week }}{{ record.group.category }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No attendance records found for this course.</p>
+    {% endif %}
+</div>
+<div id="no_attendance" style="display:none;" class="alert alert-danger">
+    No attendance data available.
+</div>
+
+<!-- Modal for displaying group students -->
+<div id="student_modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Group Students</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="student_data">
+                <!-- Student data will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary no-print" onclick="printModal('student_data')">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block custom_js %}
+    <script>
+        // Print functionality for modal
+        function printModal(modalId) {
+            var modalContent = document.getElementById(modalId).innerHTML;
+            var printWindow = window.open('', '', 'height=600,width=800');
+            
+            printWindow.document.open();
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print Modal</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                            }
+                            .modal-content {
+                                padding: 20px;
+                                border: 1px solid #ccc;
+                                border-radius: 4px;
+                            }
+                            .modal-header {
+                                padding: 10px;
+                                border-bottom: 1px solid #ddd;
+                            }
+                            .modal-footer {
+                                padding: 10px;
+                                border-top: 1px solid #ddd;
+                                text-align: right;
+                            }
+                            .btn-secondary {
+                                color: #fff;
+                                background-color: #6c757d;
+                                border-color: #6c757d;
+                            }
+                            @media print {
+                                .no-print {
+                                    display: none;
+                                }
+                                .modal-content {
+                                    width: 100%;
+                                    margin: 0;
+                                    border: none;
+                                    border-radius: 0;
+                                    box-shadow: none;
+                                }
+                                .modal-header, .modal-footer {
+                                    border: none;
+                                    padding: 0;
+                                }
+                                .modal-title {
+                                    font-size: 1.25rem;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="modal-content">
+                            ${modalContent}
+                        </div>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+    </script>
+{% endblock custom_js %}

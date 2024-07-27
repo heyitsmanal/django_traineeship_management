@@ -48,7 +48,9 @@
                                 </div>
                                 </div>
                                 {% endif %}
-                            
+                        
+
+                        <input type="hidden" name="staff_id" value="{{ staff.id }}">
 
                         <div class="card-body">
                             <div class="form-group">
@@ -82,7 +84,25 @@
                                 <textarea class="form-control" name="address">{{ staff.address }}</textarea>
                             </div>
 
-                            
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select class="form-control" value="{{ staff.gender }}" name="gender" >
+                                    <option value="male" >Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="profile_pic">upload profile pic</label>
+                                <input type="file" class="form-control-file" id="profile_pic">
+                            </div>
+
+                            <label for="course">Course</label>
+                            <select class="form-control " name="course" id="course">
+                                {% for course in courses %}
+                                <option value="{{ course.id }}" {% if course.id == staff.course.id %}selected{% endif %}>{{ course.course_name }}</option>
+                                {% endfor %}
+                            </select>
 
 
                         </div>

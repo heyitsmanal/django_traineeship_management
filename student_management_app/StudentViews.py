@@ -1,156 +1,91 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from io import BytesIO
+from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.contrib import messages
-from django.core.files.storage import FileSystemStorage #To upload Profile Picture
+from django.core.files.storage import FileSystemStorage  # To upload Profile Picture
 from django.urls import reverse
-import datetime # To Parse input DateTime into Python Date Time Object
+from django.core.files import File
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import landscape, A4   
+from django.contrib.staticfiles import finders
+from PyPDF2 import PdfReader, PdfWriter
 
-from student_management_app.models import CustomUser, Staffs, Courses, Subjects, Students, Attendance, AttendanceReport, LeaveReportStudent, FeedBackStudent, StudentResult
+from student_management_app.models import Certificat, CustomUser, Group, Note, NoteType, Project, Staffs, Courses, StudentResult, Students, Attendance, AttendanceReport
+from student_management_app.utils import generate_certificate
+
 
 
 def student_home(request):
-    student_obj = Students.objects.get(admin=request.user.id)
-    total_attendance = AttendanceReport.objects.filter(student_id=student_obj).count()
-    attendance_present = AttendanceReport.objects.filter(student_id=student_obj, status=True).count()
-    attendance_absent = AttendanceReport.objects.filter(student_id=student_obj, status=False).count()
+    try:
+        # Fetch the student object
+        student_obj = Students.objects.get(admin=request.user)
 
-    course_obj = Courses.objects.get(id=student_obj.course_id.id)
-    total_subjects = Subjects.objects.filter(course_id=course_obj).count()
+        # Calculate total attendance
+        total_attendance = AttendanceReport.objects.filter(student_id=student_obj.id).count()
+        attendance_present = AttendanceReport.objects.filter(student_id=student_obj.id, status=True).count()
+        attendance_absent = AttendanceReport.objects.filter(student_id=student_obj.id, status=False).count()
 
-    subject_name = []
-    data_present = []
-    data_absent = []
-    subject_data = Subjects.objects.filter(course_id=student_obj.course_id)
-    for subject in subject_data:
-        attendance = Attendance.objects.filter(subject_id=subject.id)
-        attendance_present_count = AttendanceReport.objects.filter(attendance_id__in=attendance, status=True, student_id=student_obj.id).count()
-        attendance_absent_count = AttendanceReport.objects.filter(attendance_id__in=attendance, status=False, student_id=student_obj.id).count()
-        subject_name.append(subject.subject_name)
-        data_present.append(attendance_present_count)
-        data_absent.append(attendance_absent_count)
-    
-    context={
-        "total_attendance": total_attendance,
-        "attendance_present": attendance_present,
-        "attendance_absent": attendance_absent,
-        "total_subjects": total_subjects,
-        "subject_name": subject_name,
-        "data_present": data_present,
-        "data_absent": data_absent
-    }
-    return render(request, "student_template/student_home_template.html", context)
+        # Calculate attendance by course
+        courses = student_obj.courses.all()  # Get all courses for the student
+        total_attendance_by_course = 0
+        for course in courses:
+            total_attendance_by_course += Attendance.objects.filter(course=course).count()
+
+
+            certificate = Certificat.objects.filter(student=student_obj).first()
+
+            context = {
+            'certificate': certificate,
+            "total_attendance": total_attendance,
+            "attendance_present": attendance_present,
+            "attendance_absent": attendance_absent,
+            "total_attendance_by_course": total_attendance_by_course,
+        }
+        return render(request, "student_template/student_home_template.html", context)
+    except Students.DoesNotExist:
+        messages.error(request, "Student not found.")
+        return redirect('doLogin')
 
 
 def student_view_attendance(request):
-    student = Students.objects.get(admin=request.user.id) # Getting Logged in Student Data
-    course = student.course_id # Getting Course Enrolled of LoggedIn Student
-    # course = Courses.objects.get(id=student.course_id.id) # Getting Course Enrolled of LoggedIn Student
-    subjects = Subjects.objects.filter(course_id=course) # Getting the Subjects of Course Enrolled
-    context = {
-        "subjects": subjects
-    }
+    try:
+        # Fetch the logged-in student
+        student = Students.objects.get(admin=request.user.id)
+        # Get all courses the student is enrolled in
+        courses = student.courses.all()
+
+        # Get the groups the student is part of
+        groups = Group.objects.filter(students=student)
+
+        # Retrieve attendance data for the student's courses and groups
+        attendance_data = AttendanceReport.objects.filter(
+            student_id=student,
+            attendance_id__course__in=courses,
+            attendance_id__group__in=groups
+        ).select_related('attendance_id', 'attendance_id__group')
+
+        # Context for rendering the template
+        context = {
+            "attendance_data": attendance_data,
+            "student": student,
+        }
+    except Students.DoesNotExist:
+        context = {
+            "attendance_data": None,
+            "student": None,
+        }
+    
     return render(request, "student_template/student_view_attendance.html", context)
 
-
-def student_view_attendance_post(request):
-    if request.method != "POST":
-        messages.error(request, "Invalid Method")
-        return redirect('student_view_attendance')
-    else:
-        # Getting all the Input Data
-        subject_id = request.POST.get('subject')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
-
-        # Parsing the date data into Python object
-        start_date_parse = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        end_date_parse = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
-
-        # Getting all the Subject Data based on Selected Subject
-        subject_obj = Subjects.objects.get(id=subject_id)
-        # Getting Logged In User Data
-        user_obj = CustomUser.objects.get(id=request.user.id)
-        # Getting Student Data Based on Logged in Data
-        stud_obj = Students.objects.get(admin=user_obj)
-
-        # Now Accessing Attendance Data based on the Range of Date Selected and Subject Selected
-        attendance = Attendance.objects.filter(attendance_date__range=(start_date_parse, end_date_parse), subject_id=subject_obj)
-        # Getting Attendance Report based on the attendance details obtained above
-        attendance_reports = AttendanceReport.objects.filter(attendance_id__in=attendance, student_id=stud_obj)
-
-        # for attendance_report in attendance_reports:
-        #     print("Date: "+ str(attendance_report.attendance_id.attendance_date), "Status: "+ str(attendance_report.status))
-
-        # messages.success(request, "Attendacne View Success")
-
-        context = {
-            "subject_obj": subject_obj,
-            "attendance_reports": attendance_reports
-        }
-
-        return render(request, 'student_template/student_attendance_data.html', context)
-       
-
-def student_apply_leave(request):
-    student_obj = Students.objects.get(admin=request.user.id)
-    leave_data = LeaveReportStudent.objects.filter(student_id=student_obj)
-    context = {
-        "leave_data": leave_data
-    }
-    return render(request, 'student_template/student_apply_leave.html', context)
-
-
-def student_apply_leave_save(request):
-    if request.method != "POST":
-        messages.error(request, "Invalid Method")
-        return redirect('student_apply_leave')
-    else:
-        leave_date = request.POST.get('leave_date')
-        leave_message = request.POST.get('leave_message')
-
-        student_obj = Students.objects.get(admin=request.user.id)
-        try:
-            leave_report = LeaveReportStudent(student_id=student_obj, leave_date=leave_date, leave_message=leave_message, leave_status=0)
-            leave_report.save()
-            messages.success(request, "Applied for Leave.")
-            return redirect('student_apply_leave')
-        except:
-            messages.error(request, "Failed to Apply Leave")
-            return redirect('student_apply_leave')
-
-
-def student_feedback(request):
-    student_obj = Students.objects.get(admin=request.user.id)
-    feedback_data = FeedBackStudent.objects.filter(student_id=student_obj)
-    context = {
-        "feedback_data": feedback_data
-    }
-    return render(request, 'student_template/student_feedback.html', context)
-
-
-def student_feedback_save(request):
-    if request.method != "POST":
-        messages.error(request, "Invalid Method.")
-        return redirect('student_feedback')
-    else:
-        feedback = request.POST.get('feedback_message')
-        student_obj = Students.objects.get(admin=request.user.id)
-
-        try:
-            add_feedback = FeedBackStudent(student_id=student_obj, feedback=feedback, feedback_reply="")
-            add_feedback.save()
-            messages.success(request, "Feedback Sent.")
-            return redirect('student_feedback')
-        except:
-            messages.error(request, "Failed to Send Feedback.")
-            return redirect('student_feedback')
 
 
 def student_profile(request):
     user = CustomUser.objects.get(id=request.user.id)
     student = Students.objects.get(admin=user)
 
-    context={
+    context = {
         "user": user,
         "student": student
     }
@@ -178,7 +113,7 @@ def student_profile_update(request):
             student = Students.objects.get(admin=customuser.id)
             student.address = address
             student.save()
-            
+
             messages.success(request, "Profile Updated Successfully")
             return redirect('student_profile')
         except:
@@ -186,15 +121,97 @@ def student_profile_update(request):
             return redirect('student_profile')
 
 
-def student_view_result(request):
-    student = Students.objects.get(admin=request.user.id)
-    student_result = StudentResult.objects.filter(student_id=student.id)
+
+
+
+
+def get_student_notes(request):
+    user = request.user
+
+    try:
+        student = Students.objects.get(admin=user)
+    except Students.DoesNotExist:
+        messages.error(request, "Student not found.")
+        return HttpResponse("Student not found", status=404)
+
+    courses = student.courses.all()
+    all_notes = []
+
+    for course in courses:
+        # Fetch assignment and exam notes for the course
+        assignment_note = Note.objects.filter(
+            student=student, course=course, note_type=NoteType.ASSIGNMENT
+        ).first()
+        exam_note = Note.objects.filter(
+            student=student, course=course, note_type=NoteType.EXAM
+        ).first()
+
+        # Default to 0 if the note doesn't exist
+        assignment_value = float(assignment_note.content) if assignment_note else 0.0
+        exam_value = float(exam_note.content) if exam_note else 0.0
+
+        # Sum the notes
+        total_notes = assignment_value + exam_value
+
+        # Fetch attendance records and count absences specific to this course
+        absences = AttendanceReport.objects.filter(
+            student_id=student,
+            attendance_id__course=course,
+            attendance_id__group__students=student,  # Ensure correct group filtering
+            status=True
+        ).count()
+
+        # Subtract the number of absences from the total notes
+        adjusted_total = total_notes - absences
+
+        # Final result calculation
+        final_result = adjusted_total / 3
+
+        all_notes.append({
+            'course_name': course.course_name,
+            'assignment_note': assignment_value,
+            'exam_note': exam_value,
+            'absent_count': absences,
+            'final_result': final_result,
+        })
+
     context = {
-        "student_result": student_result,
+        'student_name': student.admin.username,
+        'all_notes': all_notes,
     }
-    return render(request, "student_template/student_view_result.html", context)
+    return render(request, 'student_template/get_student_notes.html', context)
 
 
 
 
+def preview_certificate(request, certificate_id):
+    try:
+        certificate = Certificat.objects.get(id=certificate_id)
+    except Certificat.DoesNotExist:
+        return HttpResponse('Certificate not found', status=404)
+
+    # Assuming each student has only one project associated with them
+    projects = Project.objects.filter(student=certificate.student)
+    
+    if not projects:
+        return HttpResponse('No project found for the student', status=404)
+    
+    # Extract the title from the first project in the queryset
+    project_title = projects.first().title  # Assuming your Project model has a 'title' field
+    
+    # Generate the certificate with the signature included
+    base_pdf_buffer = generate_certificate(
+        student_name=f'{certificate.student.admin.first_name} {certificate.student.admin.last_name}',
+        ppr=certificate.student.code_PPR,
+        reference=certificate.student.reference,
+        project_title=project_title,  # Pass the project title directly
+        trainer_name=certificate.staff_name,
+        include_signature=True  # Pass True to include the signature
+    )
+    
+    response = HttpResponse(base_pdf_buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename=certificate_{certificate_id}.pdf'
+    return response
+
+   
 
