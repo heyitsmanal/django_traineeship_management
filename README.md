@@ -1,10 +1,14 @@
 Django Student Management System
+
 This project is a comprehensive Student Management System developed using Python with the Django framework, designed for educational purposes.
 
 If you find this project valuable, please consider starring the repository to show your support.
 
 FEATURES
+
+
 Admin Users
+
 Overview Dashboards: View summary charts for student performance, staff performance, and course statistics.
 Staff Management: Add, update, and delete staff members.
 Student Management: Add, update, and delete student records.
@@ -12,98 +16,121 @@ Course Management: Add, update, and delete courses.
 Subject Management: Add, update, and delete subjects.
 Session Management: Add, update, and delete academic sessions.
 Attendance Monitoring: View and manage student attendance.
+
 Staff/Teachers
+
 Summary Charts: Access charts related to students, subjects, and leave status.
 Attendance Management: Record and update student attendance.
 Results Management: Add and update student results.
+
 Students
+
 Summary Charts: View charts related to attendance, subjects, and leave status.
 Attendance View: Check personal attendance records.
 Results View: Access academic results.
+
+
 INSTALLATION AND SETUP
-1. Prerequisites
-Git: Version control system
-Download Git
-Python: Latest version
-Download Python
-Pip: Python package manager
-Pip Installation Guide
-2. Installation Steps
-A. Create a Directory for the Project
-perl
-Copier le code
-mkdir django-student-management-system
-cd django-student-management-system
-B. Set Up a Virtual Environment
-Install Virtual Environment:
 
-Copier le code
-pip install virtualenv
-Create the Virtual Environment:
+  1.Prerequisites
 
-For Windows:
+    Git: Version control system
+      Download Git
+    Python: Latest version
+      Download Python
+    Pip: Python package manager
+      Pip Installation Guide
 
-Copier le code
-python -m venv venv
-For macOS/Linux:
+  2.Installation Steps
 
-Copier le code
-python3 -m venv venv
-Activate the Virtual Environment:
+    A.Create a Directory for the Project
 
-For Windows:
+        mkdir django-student-management-system
+        cd django-student-management-system
 
-Copier le code
-venv\Scripts\activate
-For macOS/Linux:
+    B.Set Up a Virtual Environment
 
-bash
-Copier le code
-source venv/bin/activate
-C. Clone the Repository
-bash
-Copier le code
-git clone https://github.com/yourusername/django-student-management-system.git
-cd django-student-management-system
-D. Install Project Dependencies
-Copier le code
-pip install -r requirements.txt
-E. Configure Allowed Hosts
-Open settings.py in your project.
+        Install Virtual Environment:
+          
+          pip install virtualenv
+          
+        Create the Virtual Environment:
+          For Windows:
+          
+          python -m venv venv
+          
+          For macOS/Linux:
+          
+          python3 -m venv venv
+          
+        Activate the Virtual Environment:
+          For Windows:
+          
+          venv\Scripts\activate
+          
+          For macOS/Linux:
+          
+          source venv/bin/activate
+          
+      3.Clone the Repository
 
-Update the ALLOWED_HOSTS setting:
 
-css
-Copier le code
-ALLOWED_HOSTS = ['*']
-F. Run the Development Server
-For Windows:
+        git clone https://github.com/yourusername/django-student-management-system.git
+        cd django-student-management-system
+      
+      4.Install Project Dependencies
 
-Copier le code
-python manage.py runserver
-For macOS/Linux:
+        
+        pip install -r requirements.txt
+      
+      5.Configure Allowed Hosts
 
-Copier le code
-python3 manage.py runserver
-G. Create a Superuser
-Copier le code
-python manage.py createsuperuser
-Follow the prompts to set up the superuser credentials.
-Default Credentials for Testing:
-HOD/SuperAdmin
+        Open settings.py in your project.
+        Update the ALLOWED_HOSTS setting:
+        
+        ALLOWED_HOSTS = ['*']
+        
+      6.Run the Development Server
 
-Email: admin@gmail.com
-Password: admin
-Staff
+        For Windows:
+        
+        python manage.py runserver
+        
+        For macOS/Linux:
+        
+        python3 manage.py runserver
+        
+      7.Create a Superuser
 
-Email: staff@gmail.com
-Password: staff
-Student
+        
+        python manage.py createsuperuser
+        
+        Follow the prompts to set up the superuser credentials.
+    
 
-Email: student@gmail.com
-Password: student
-LICENSE
+  Default Credentials for Testing:
+
+    HOD/SuperAdmin
+    
+      Email: admin@gmail.com
+      Password: admin
+      
+    Staff
+    
+      Email: staff@gmail.com
+      Password: staff
+      
+    Student
+    
+      Email: student@gmail.com
+      Password: student
+
+
+LISCENSE
+
+
 This project is licensed under the MIT License. See the LICENSE file for details.
+
 
 Copyright © 2022 @ritikbanger
 
