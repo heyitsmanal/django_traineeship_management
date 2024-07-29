@@ -8,14 +8,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from .utils import generate_certificate
 from django.urls import reverse
+from django.db.models.signals import post_save
 
 
-from student_management_app.models import CustomUser, Group, GroupSchedule, Project, Staffs, Courses, Students, Attendance, AttendanceReport
+
+
+from student_management_app.models import BlacklistedStudent, CustomUser, Day, Group, GroupSchedule, Project, Staffs, Courses, Students, Attendance, AttendanceReport, group_created_handler
 from .forms import AddStudentForm, EditStudentForm, EnrollStudentForm, GroupForm , GroupingForm
 
 
@@ -321,6 +324,8 @@ def add_student(request):
     }
     return render(request, 'hod_template/add_student_template.html', context)
 
+
+
 def add_student_save(request):
     if request.method == 'POST':
         form = AddStudentForm(request.POST, request.FILES)
@@ -555,6 +560,8 @@ def admin_view_attendance(request):
         print(f"Error: {e}")
         return render(request, "hod_template/error.html", {"error": str(e)})
 
+
+
 def admin_get_attendance_courses(request):
     # Ensure the request method is POST
     if request.method == 'POST':
@@ -669,64 +676,140 @@ def manage_groups(request):
     if request.method == "POST":
         avoid_days = request.POST.getlist('avoid_days', [])
         create_days = request.POST.getlist('create_days', [])
+        max_salle_disponible = int(request.POST.get('max_salle_disponible', 0))
 
-        # Handle course groups
-        all_students = list(Students.objects.filter(group__isnull=True))
-        print(f"Students without group: {all_students}")
-        random.shuffle(all_students)
+        if not create_days:
+            create_days = [day.name for day in Day.objects.all()]
 
-        groups = []
-        while all_students:
-            new_group = []
-            while len(new_group) < max_group_size and all_students:
-                new_group.append(all_students.pop(0))
-            groups.append(new_group)
+        categories = ['Morning', 'Evening']
+        all_groups = []
 
-        print(f"Created groups: {groups}")
+        try:
+            total_students = Students.objects.filter(group__isnull=True).count()
+            if total_students == 0:
+                messages.error(request, "No students available for grouping.")
+                return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
 
-        # Adjust group sizes
-        for group in groups[:]:
-            if len(group) < min_group_size:
-                for student in group:
-                    for larger_group in groups:
-                        if len(larger_group) < max_group_size:
-                            larger_group.append(student)
-                            break
-                groups.remove(group)
+            available_courses = list(Courses.objects.all())
+            if not available_courses:
+                messages.error(request, "No courses available for scheduling.")
+                return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
 
-        print(f"Adjusted groups: {groups}")
+            random.shuffle(available_courses)
+            course_index = 0
 
-        # Create new groups and assign them to students
-        for group in groups:
-            if group:
-                new_group = Group.objects.create()  # Create group
-                new_group.save()
-                print(f"Created group {new_group.id}")
-                for student in group:
-                    student.group = new_group
-                    student.save()
+            used_courses = set()
+            group_used_courses = {}
 
-        # Handle day management
-        for day in avoid_days:
-            Group.objects.filter(day_of_week=day).delete()
+            for category in categories:
+                all_students = list(Students.objects.filter(group__isnull=True, preferred_category=category))
+                random.shuffle(all_students)
 
-        for day in create_days:
-            for group in Group.objects.filter(day_of_week__isnull=True):
-                group.day_of_week = day
-                group.save()
+                groups = []
+                while all_students and len(groups) < max_salle_disponible:
+                    new_group = []
+                    while len(new_group) < max_group_size and all_students:
+                        new_group.append(all_students.pop(0))
+                    groups.append(new_group)
 
-        # Prepare data for the template
+                for group_students in groups[:]:
+                    if len(group_students) < min_group_size:
+                        added = False
+                        for student in group_students:
+                            for larger_group in groups:
+                                if larger_group is not group_students and len(larger_group) < max_group_size:
+                                    larger_group.append(student)
+                                    added = True
+                                    break
+                        if added:
+                            groups.remove(group_students)
+
+                for group_students in groups:
+                    if group_students:
+                        new_group = Group.objects.create(category=category)
+                        group_used_courses[new_group.id] = set()
+                        days_assigned = set()
+
+                        for day_name in create_days:
+                            if course_index >= len(available_courses):
+                                break  # Stop if no more courses are available
+
+                            assigned_course = available_courses[course_index]
+
+                            if (assigned_course.id in used_courses or
+                                assigned_course.id in group_used_courses[new_group.id]):
+                                continue
+
+                            day, _ = Day.objects.get_or_create(name=day_name)
+                            if day in days_assigned:
+                                continue  # Avoid assigning the same day twice
+
+                            # Schedule the courses for the day with non-overlapping times
+                            times = []
+                            if category == 'Morning':
+                                times = [('08:30', '10:30'), ('10:45', '12:30')]
+                            else:
+                                times = [('13:30', '15:00'), ('15:15', '16:30')]
+
+                            for start_time, end_time in times:
+                                if assigned_course.id not in group_used_courses[new_group.id]:
+                                    new_group.courses.add(assigned_course)
+                                    new_group.days_of_week.add(day)
+                                    new_group.create_initial_schedule()
+                                    days_assigned.add(day)
+                                    group_used_courses[new_group.id].add(assigned_course.id)
+                                    used_courses.add(assigned_course.id)
+
+                                    new_group.save()
+                                    course_index += 1
+                                    if course_index >= len(available_courses):
+                                        break  # Stop if no more courses are available
+
+                        for student in group_students:
+                            student.group = new_group
+                            student.save()
+
+                all_groups.extend(groups)
+
+                if course_index >= len(available_courses):
+                    break  # Stop creating groups if all courses are scheduled
+
+            no_preference_students = list(Students.objects.filter(group__isnull=True, preferred_category__isnull=True))
+            random.shuffle(no_preference_students)
+
+            for student in no_preference_students:
+                for group in all_groups:
+                    if len(group) < max_group_size:
+                        student.group = group
+                        student.save()
+                        break
+
+            for day_name in avoid_days:
+                day = Day.objects.filter(name=day_name).first()
+                if day:
+                    groups_to_check = Group.objects.filter(days_of_week=day)
+                    for group in groups_to_check:
+                        group.days_of_week.remove(day)
+                        if not group.days_of_week.exists() or not group.students.exists():
+                            group.delete()
+
+            Group.objects.annotate(students_count=Count('students')).filter(students_count=0).delete()
+
+            messages.success(request, "Groups have been successfully managed and assigned to students.")
+        except IntegrityError as e:
+            transaction.set_rollback(True)
+            messages.error(request, f"An error occurred while managing groups: {e}")
+            return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
+
         groups = Group.objects.all().annotate(students_count=Count('students'))
- 
 
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             html = render_to_string('hod_template/group_list_partial.html', {'course_groups': groups}, request=request)
             return JsonResponse({'group_list_html': html})
+        else:
+            print("Not an AJAX request")
 
-    # Prepare data for the template
     groups = Group.objects.all().annotate(students_count=Count('students'))
-
-
     context = {
         "course_groups": groups,
         "form": GroupingForm(),
@@ -753,14 +836,15 @@ def add_group(request):
         if form.is_valid():
             group = form.save(commit=False)
             group.save()
+
+            # Handle many-to-many relationships
+            days_of_week = form.cleaned_data.get('days_of_week')
+            group.days_of_week.set(days_of_week)  # Set the selected days of the week
             
-            # Automatically assign all courses to the group
             all_courses = Courses.objects.all()
             group.courses.set(all_courses)  # Assign all courses to the group
-            
-            form.save_m2m()  # Not necessary if you set courses manually
-            
-            return redirect('manage_student_groups')
+
+            return redirect('manage_groups')  # Ensure this URL name is correct
         else:
             # Print form errors for debugging
             print(form.errors)
@@ -774,24 +858,51 @@ def add_group(request):
     return render(request, 'hod_template/add_group_template.html', context)
 
 
+
+def delete_group(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    
+    if request.method == 'POST':
+        group.delete()
+        return redirect('manage_groups')  # Redirect to a page that lists the groups
+    
+    # If it's not a POST request, redirect to a safe page
+    return redirect('manage_groups')
+
+
+
+
 def manage_staff_groups(request):
     staff_members = Staffs.objects.select_related('admin', 'course').all()
     groups = Group.objects.all()
+    
+    # Create a list of dictionaries with staff ID and their assigned group IDs
+    staff_groups = [
+        {
+            'staff_id': staff.id,
+            'assigned_group_ids': list(staff.groups.values_list('id', flat=True))
+        }
+        for staff in staff_members
+    ]
 
     context = {
         'staff_members': staff_members,
         'groups': groups,
+        'staff_groups': staff_groups,
     }
     return render(request, 'hod_template/manage_staff_groups.html', context)
+
+
+
 
 
 def manage_student_groups(request):
     students = Students.objects.all()
     groups = Group.objects.all()
     
-    # Get all unique day_of_week and category combinations
-    days_of_week = [day for day, _ in Group.DAYS_OF_WEEK]
-    categories = [category for category, _ in Group.CATEGORY_CHOICES]
+    # Assuming Day model is defined and you have instances of days of the week
+    days_of_week = Day.objects.values_list('name', flat=True)  # Adjust 'name' to the field in your Day model
+    categories = [choice[0] for choice in Group.CATEGORY_CHOICES]
 
     context = {
         'students': students,
@@ -800,6 +911,8 @@ def manage_student_groups(request):
         'categories': categories,
     }
     return render(request, 'hod_template/manage_student_groups.html', context)
+
+
 
 
 def update_staff_group(request):
@@ -814,13 +927,19 @@ def update_staff_group(request):
             print(f"Received group_ids: {group_ids}, staff_id: {staff_id}")
 
             if group_ids:
+                # Ensure group_ids is not empty and filter groups
                 groups = Group.objects.filter(id__in=group_ids)
-                staff.group.set(groups)  # Set multiple groups
+
+                if groups.exists():
+                    staff.groups.set(groups)  # Set multiple groups
+                else:
+                    messages.error(request, "Selected groups not found")
+                    return redirect('manage_staff_groups')
             else:
-                staff.group.clear()  # Clear groups if no groups are selected
+                staff.groups.clear()  # Clear groups if no groups are selected
 
             # Debugging: Print staff details after assigning new groups
-            print(f"Assigned Groups - Staff: {staff.id}, New Groups: {list(staff.group.all().values_list('id', flat=True))}")
+            print(f"Assigned Groups - Staff: {staff.id}, New Groups: {list(staff.groups.all().values_list('id', flat=True))}")
 
             staff.save()
 
@@ -828,7 +947,7 @@ def update_staff_group(request):
         except Staffs.DoesNotExist:
             messages.error(request, "Staff not found")
         except Group.DoesNotExist:
-            messages.error(request, "Selected groups not found")
+            messages.error(request, "One or more groups not found")
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
             print(f"Exception occurred: {str(e)}")
@@ -837,36 +956,32 @@ def update_staff_group(request):
 
 
 
+
+
 def update_student_group(request):
     if request.method == "POST":
-        group_ids = request.POST.getlist('group')  # Handle multiple groups
+        group_id = request.POST.get('group')  # Handle a single group
         student_id = request.POST.get('student_id')
 
         try:
             student = Students.objects.get(id=student_id)
 
-            if group_ids:
-                groups = Group.objects.filter(id__in=group_ids)
-                student.group.set(groups)  # Set multiple groups
+            if group_id:
+                group = Group.objects.get(id=group_id)
+                student.group = group  # Set the group for the student
             else:
-                student.group.clear()  # Clear groups if no groups are selected
-
-            # Debug line to print current student and group information
-            print(f"Before update - Student: {student.id}, Groups: {list(student.group.all().values_list('id', flat=True))}")
+                student.group = None  # Clear the group if no group is selected
 
             student.save()
 
-            # Debug line to print updated student and group information
-            print(f"After update - Student: {student.id}, Groups: {list(student.group.all().values_list('id', flat=True))}")
 
-            messages.success(request, "Student groups updated successfully")
+            messages.success(request, "Student group updated successfully")
         except Students.DoesNotExist:
             messages.error(request, "Student not found")
         except Group.DoesNotExist:
-            messages.error(request, "Selected groups not found")
+            messages.error(request, "Selected group not found")
 
     return redirect('manage_student_groups')
-
 
 
 
@@ -886,13 +1001,19 @@ def generate_certificate_view(request, project_id):
     # Fetch the student related to the project
     student = get_object_or_404(Students, id=project.student.id)
     
+    # Ensure the encadrant is set and has the necessary attributes
+    if project.encadrant and hasattr(project.encadrant.admin, 'first_name') and hasattr(project.encadrant.admin, 'last_name'):
+        trainer_name = f"{project.encadrant.admin.last_name}, {project.encadrant.admin.first_name}"
+    else:
+        trainer_name = "N/A"  # Or handle it as needed if trainer details are missing
+    
     # Generate certificate for the project
     buffer = generate_certificate(
         student_name=f'{student.admin.last_name} {student.admin.first_name}',  # Assuming a method to get full name
         ppr=student.code_PPR,
         reference=student.reference,
         project_title=project.title,
-        trainer_name=project.encadrant.get_full_name(),  # Assuming encadrant is a User with get_full_name method
+        trainer_name=trainer_name
     )
     
     # Return the certificate as a downloadable PDF
@@ -902,6 +1023,7 @@ def generate_certificate_view(request, project_id):
     return response
 
 
+
 def print_certificate_template(request):
     # Fetch full project objects
     projects = Project.objects.all()
@@ -909,23 +1031,15 @@ def print_certificate_template(request):
     return render(request, 'hod_template/print_certificate_template.html', {'projects': projects})
 
 
-def student_timetable(request):
-    student = request.user
-    if hasattr(student, 'student'):
-        try:
-            student_group = student.student.group
-            timetable = GroupSchedule.objects.filter(group=student_group).order_by('day_of_week', 'start_time')
-            days_of_week = [day[0] for day in Group.DAYS_OF_WEEK]
-            return render(request, 'student_home.html', {
-                'timetable': timetable,
-                'days_of_week': days_of_week,
-            })
-        except Group.DoesNotExist:
-            return HttpResponse("Group information not found.", status=404)
-    else:
-        return HttpResponse("You are not a student.", status=403)
-    
 def manage_timetable(request):
+    groups = Group.objects.all()  # Assuming you have a Group model
+    return render(request, 'hod_template/manage_timetable.html', {'groups': groups})
+
+
+def group_timetable(request, group_id):
+    group = get_object_or_404(Group, id=group_id)
+    timetable = GroupSchedule.objects.filter(group=group).order_by('day_of_week', 'start_time')
+    
     if request.method == 'POST':
         for key, value in request.POST.items():
             if key.startswith('start_time_'):
@@ -938,14 +1052,46 @@ def manage_timetable(request):
                 schedule.end_time = end_time
                 schedule.category = category
                 schedule.save()
-        return redirect(reverse('manage_timetable'))
-    else:
-        timetable = GroupSchedule.objects.all().order_by('day_of_week', 'start_time')
-        return render(request, 'hod_template/manage_timetable.html', {'timetable': timetable})
+        return redirect(reverse('group_timetable', args=[group.id]))
+    
+    return render(request, 'hod_template/group_timetable.html', {'timetable': timetable, 'selected_group': group})
+
 
 def delete_schedule(request, schedule_id):
+    # Retrieve the schedule object or raise 404 if not found
     schedule = get_object_or_404(GroupSchedule, id=schedule_id)
-    if request.method == 'POST':
-        schedule.delete()
-        return redirect(reverse('manage_timetable'))
-    return render(request, 'confirm_delete.html', {'schedule': schedule})
+    
+    # Perform the deletion
+    schedule.delete()
+    
+    # Redirect to the manage timetable page
+    return redirect('manage_timetable')
+
+
+
+def delete_students_with_excessive_absences(request):
+    MAX_ALLOWED_ABSENCES = 3
+    
+    students = Students.objects.all()
+    
+    for student in students:
+        absences_count = AttendanceReport.objects.filter(student_id=student, status=True).count()
+        
+        if absences_count > MAX_ALLOWED_ABSENCES:
+            # Add student to blacklist
+            BlacklistedStudent.objects.create(
+                student=student.admin,  # Assuming `admin` is a User instance related to the student
+                reason="Exceeded maximum allowed absences"
+            )
+            
+            # Delete the student
+            student.delete()
+            messages.info(request, f"Student {student.admin.username} has been deleted and blacklisted due to excessive absences.")
+    
+    return redirect('admin_view_attendance')
+
+
+
+
+
+

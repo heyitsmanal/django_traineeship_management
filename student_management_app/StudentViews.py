@@ -1,4 +1,5 @@
 from io import BytesIO
+from venv import logger
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.contrib import messages
@@ -12,36 +13,37 @@ from reportlab.lib.pagesizes import landscape, A4
 from django.contrib.staticfiles import finders
 from PyPDF2 import PdfReader, PdfWriter
 
-from student_management_app.models import Certificat, CustomUser, Group, Note, NoteType, Project, Staffs, Courses, StudentResult, Students, Attendance, AttendanceReport
+from student_management_app.models import Certificat, CustomUser, Group, GroupSchedule, Note, NoteType, Project, Staffs, Courses, StudentResult, Students, Attendance, AttendanceReport
 from student_management_app.utils import generate_certificate
-
 
 
 def student_home(request):
     try:
-        # Fetch the student object
         student_obj = Students.objects.get(admin=request.user)
-
-        # Calculate total attendance
         total_attendance = AttendanceReport.objects.filter(student_id=student_obj.id).count()
         attendance_present = AttendanceReport.objects.filter(student_id=student_obj.id, status=True).count()
         attendance_absent = AttendanceReport.objects.filter(student_id=student_obj.id, status=False).count()
+        courses = student_obj.courses.all()
+        total_attendance_by_course = sum(Attendance.objects.filter(course=course).count() for course in courses)
+        project = Project.objects.filter(student=student_obj).first()
 
-        # Calculate attendance by course
-        courses = student_obj.courses.all()  # Get all courses for the student
-        total_attendance_by_course = 0
-        for course in courses:
-            total_attendance_by_course += Attendance.objects.filter(course=course).count()
+        student_group = student_obj.group
+        if student_group:
+            timetable = GroupSchedule.objects.filter(group=student_group).order_by('day_of_week__name', 'start_time')
+            days_of_week = ' - '.join(day.name for day in student_group.days_of_week.all())  # Fetch names of days
+        else:
+            timetable = []
+            days_of_week = []
 
-
-            certificate = Certificat.objects.filter(student=student_obj).first()
-
-            context = {
-            'certificate': certificate,
+        context = {
+            'student_group_day_of_week': days_of_week if student_group else "No Group",
+            'student_group_category': student_group.category if student_group else "No Group",
+            'project': project,
             "total_attendance": total_attendance,
             "attendance_present": attendance_present,
             "attendance_absent": attendance_absent,
             "total_attendance_by_course": total_attendance_by_course,
+            'timetable': timetable,
         }
         return render(request, "student_template/student_home_template.html", context)
     except Students.DoesNotExist:
@@ -49,24 +51,21 @@ def student_home(request):
         return redirect('doLogin')
 
 
+
+
+
 def student_view_attendance(request):
     try:
-        # Fetch the logged-in student
         student = Students.objects.get(admin=request.user.id)
-        # Get all courses the student is enrolled in
         courses = student.courses.all()
-
-        # Get the groups the student is part of
         groups = Group.objects.filter(students=student)
 
-        # Retrieve attendance data for the student's courses and groups
         attendance_data = AttendanceReport.objects.filter(
             student_id=student,
             attendance_id__course__in=courses,
             attendance_id__group__in=groups
         ).select_related('attendance_id', 'attendance_id__group')
 
-        # Context for rendering the template
         context = {
             "attendance_data": attendance_data,
             "student": student,
@@ -78,6 +77,9 @@ def student_view_attendance(request):
         }
     
     return render(request, "student_template/student_view_attendance.html", context)
+
+
+
 
 
 
@@ -124,7 +126,6 @@ def student_profile_update(request):
 
 
 
-
 def get_student_notes(request):
     user = request.user
 
@@ -138,7 +139,6 @@ def get_student_notes(request):
     all_notes = []
 
     for course in courses:
-        # Fetch assignment and exam notes for the course
         assignment_note = Note.objects.filter(
             student=student, course=course, note_type=NoteType.ASSIGNMENT
         ).first()
@@ -146,25 +146,18 @@ def get_student_notes(request):
             student=student, course=course, note_type=NoteType.EXAM
         ).first()
 
-        # Default to 0 if the note doesn't exist
         assignment_value = float(assignment_note.content) if assignment_note else 0.0
         exam_value = float(exam_note.content) if exam_note else 0.0
-
-        # Sum the notes
         total_notes = assignment_value + exam_value
 
-        # Fetch attendance records and count absences specific to this course
         absences = AttendanceReport.objects.filter(
             student_id=student,
             attendance_id__course=course,
             attendance_id__group__students=student,  # Ensure correct group filtering
-            status=True
+            status=False  # Status should be False for absences
         ).count()
 
-        # Subtract the number of absences from the total notes
         adjusted_total = total_notes - absences
-
-        # Final result calculation
         final_result = adjusted_total / 3
 
         all_notes.append({
@@ -182,36 +175,37 @@ def get_student_notes(request):
     return render(request, 'student_template/get_student_notes.html', context)
 
 
+def preview_certificate(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    student = get_object_or_404(Students, id=project.student.id)
 
-
-def preview_certificate(request, certificate_id):
-    try:
-        certificate = Certificat.objects.get(id=certificate_id)
-    except Certificat.DoesNotExist:
-        return HttpResponse('Certificate not found', status=404)
-
-    # Assuming each student has only one project associated with them
-    projects = Project.objects.filter(student=certificate.student)
-    
-    if not projects:
-        return HttpResponse('No project found for the student', status=404)
-    
-    # Extract the title from the first project in the queryset
-    project_title = projects.first().title  # Assuming your Project model has a 'title' field
-    
-    # Generate the certificate with the signature included
-    base_pdf_buffer = generate_certificate(
-        student_name=f'{certificate.student.admin.first_name} {certificate.student.admin.last_name}',
-        ppr=certificate.student.code_PPR,
-        reference=certificate.student.reference,
-        project_title=project_title,  # Pass the project title directly
-        trainer_name=certificate.staff_name,
-        include_signature=True  # Pass True to include the signature
+    # Check if a certificate already exists for the project
+    certificate, created = Certificat.objects.get_or_create(
+        student=student,
+        project=project,  # Include the project here
+        defaults={
+            'organization_name': 'C.M.C.F',
+            # other fields can be initialized here if necessary
+        }
     )
-    
-    response = HttpResponse(base_pdf_buffer.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename=certificate_{certificate_id}.pdf'
-    return response
 
-   
+    # If the certificate was newly created, generate the PDF and save it
+ 
+    buffer = generate_certificate(
+            student_name=f'{student.admin.last_name} {student.admin.first_name}',
+            ppr=student.code_PPR,
+            reference=student.reference,
+            project_title=project.title,
+            trainer_name=f"{project.encadrant.admin.last_name}, {project.encadrant.admin.first_name}",
+            include_signature=True  # or some condition to include signature
+        )
+        
+       
+    certificate.save()
+    
+
+    # Return the certificate as a downloadable PDF
+    response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="certificate_{project_id}.pdf"'
+    return response
 

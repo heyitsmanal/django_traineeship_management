@@ -10,7 +10,6 @@
 
 <section class="content">
     <div class="container-fluid">
-
         <div class="row">
             <div class="col-md-12">
                 <!-- general form elements -->
@@ -21,18 +20,25 @@
                     <!-- /.card-header -->
                     <!-- form start -->
 
-
-
                     <form role="form" method="POST">
                         {% csrf_token %}
                         <div class="card-body">
-                            <!-- Day of Week -->
+                            <!-- Days of the Week -->
                             <div class="form-group">
-                                <label for="id_day_of_week">Day of Week</label>
-                                {{ form.day_of_week|add_css_class:"form-control" }}
-                                {% if form.day_of_week.errors %}
+                                <label for="id_days_of_week">Days of the Week</label>
+                                <div class="checkbox-group">
+                                    {% for day in form.days_of_week %}
+                                        <div class="form-check form-check-inline">
+                                            {{ day.tag|add_css_class:"form-check-input" }}
+                                            <label class="form-check-label" for="{{ day.id_for_label }}">
+                                                {{ day.choice_label }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.days_of_week.errors %}
                                     <div class="text-danger">
-                                        {{ form.day_of_week.errors }}
+                                        {{ form.days_of_week.errors }}
                                     </div>
                                 {% endif %}
                             </div>
@@ -52,18 +58,13 @@
                     
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">Add Group</button>
-                            <a class="btn btn-secondary" href="{% url 'manage_student_groups' %}" role="button">Cancel</a>
+                            <a class="btn btn-secondary" href="{% url 'manage_groups' %}" role="button">Cancel</a>
                         </div>
                     </form>
-                    
-
-
-                    
                 </div>
                 <!-- /.card -->
             </div>
         </div>
-
     </div><!-- /.container-fluid -->
 </section>
 

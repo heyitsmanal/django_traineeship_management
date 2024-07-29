@@ -10,7 +10,7 @@ import string
 from django.core.mail import send_mail
 from django.conf import settings
 from .forms import  EnrollStudentForm
-from .models import Courses, CustomUser, Students
+from .models import BlacklistedStudent, Courses, CustomUser, Students
 from .EmailBackEnd import EmailBackEnd  # Assuming you have a custom backend
 
 def homepage(request):
@@ -20,23 +20,9 @@ def loginPage(request):
     return render(request, 'login.html')
 
 
-
 def generate_password(length=8):
     """Generate a random password."""
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def enroll_student(request):
     if request.method == 'POST':
@@ -44,6 +30,15 @@ def enroll_student(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             username = form.cleaned_data['username']
+            
+            # Check if the username or email belongs to a blacklisted student
+            if BlacklistedStudent.objects.filter(student__username=username).exists():
+                messages.error(request, "This username is blacklisted and cannot be used for enrollment.")
+                return redirect('enroll_student')
+            
+            if BlacklistedStudent.objects.filter(student__email=email).exists():
+                messages.error(request, "This email is blacklisted and cannot be used for enrollment.")
+                return redirect('enroll_student')
             
             # Check if username or email already exists
             if CustomUser.objects.filter(username=username).exists():
@@ -65,7 +60,7 @@ def enroll_student(request):
             user.save()
 
             # Create student profile
-            student = user.students
+            student = user.students  # Accessing the related student profile
             student.gender = form.cleaned_data['gender']
             student.profile_pic = form.cleaned_data['profile_pic']
             student.address = form.cleaned_data['address']
@@ -89,12 +84,12 @@ def enroll_student(request):
 
     return render(request, 'Enroll.html', {'form': form})
 
+
 def enroll_success(request):
     messages.success(request, f"you Enrolled Successfully! "
                          f"Username: {username} and Password: {username}. " #type:ignore
                          f"Please change your password after logging in.")
     return redirect('enroll_success')
-
 
 
 
@@ -128,3 +123,7 @@ def get_user_details(request):
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+def contact(request):
+    return render(request, 'contact.html')

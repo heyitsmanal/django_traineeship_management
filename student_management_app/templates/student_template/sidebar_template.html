@@ -55,20 +55,20 @@
               </a>
           </li>
 
-          {% if certificate %}
+          {% if project %}
               <li class="nav-item">
-                <a href="{% url 'preview_certificate' certificate_id=certificate.id %}" class="nav-link {% if request.path == '/certificate/preview/' %} active {% endif %}">
+                <a href="{% url 'preview_certificate' project_id=project.id %}" class="nav-link {% if request.path == '/certificate/preview/' %} active {% endif %}">
                       <i class="nav-icon fas fa-envelope-open-text"></i>
                       <p>Preview Certificate</p>
                   </a>
               </li>
           {% else %}
-              <li class="nav-item">
-                <div class="nav-link disabled">
-                    <i class="nav-icon fas fa-envelope-open-text"></i>
-                    <p>No project available.</p>
-                </div>
-              </li>
+          <li class="nav-item">
+            <div class="nav-link disabled">
+                <i class="nav-icon fas fa-envelope-open-text"></i>
+                <p>No project available.</p>
+            </div>
+        </li>
           {% endif %}
 
 

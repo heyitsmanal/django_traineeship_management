@@ -1,7 +1,7 @@
 {% extends 'hod_template/base_template.html' %}
 
 {% block page_title %}
-    Update Timetable
+    Manage Timetables
 {% endblock page_title %}
 
 {% block main_content %}
@@ -36,53 +36,69 @@
     <div class="container-fluid">
         <div class="row d-flex justify-content-center">
             <div class="container">
-                <h2>Update Timetable</h2>
 
-                <div class="table-responsive">
-                    <form method="post" action="{% url 'manage_timetable' %}">
-                        {% csrf_token %}
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Day</th>
-                                    <th>Course</th>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Category</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for schedule in timetable %}
-                                    <tr>
-                                        <td>{{ schedule.day_of_week }}</td>
-                                        <td>{{ schedule.course }}</td>
-                                        <td>
-                                            <input type="time" name="start_time_{{ schedule.id }}" value="{{ schedule.start_time }}" class="form-control">
-                                        </td>
-                                        <td>
-                                            <input type="time" name="end_time_{{ schedule.id }}" value="{{ schedule.end_time }}" class="form-control">
-                                        </td>
-                                        <td>
-                                            <select name="category_{{ schedule.id }}" class="form-control">
-                                                <option value="Morning" {% if schedule.category == 'Morning' %}selected{% endif %}>Morning</option>
-                                                <option value="Evening" {% if schedule.category == 'Evening' %}selected{% endif %}>Evening</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            {% comment %} <a href="{% url 'delete_schedule' schedule.id %}" class="btn btn-danger">Delete</a> {% endcomment %}
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="6">No timetable entries available.</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-primary">Update Timetable</button>
-                    </form>
+                <!-- List of Groups -->
+                <div class="mb-4">
+                    <h4>Groups</h4>
+                    <div class="list-group">
+                        {% for group in groups %}
+                            <a href="{% url 'group_timetable' group_id=group.id %}" class="list-group-item list-group-item-action">
+                                group {{ group.id }} Timetable
+                            </a>
+                        {% empty %}
+                            <p>No groups available.</p>
+                        {% endfor %}
+                    </div>
                 </div>
+
+                <!-- Group-specific Timetable -->
+                {% if selected_group %}
+                    <div class="table-responsive">
+                        <form method="post" action="{% url 'update_timetable' selected_group.id %}">
+                            {% csrf_token %}
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Course</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in timetable %}
+                                        <tr>
+                                            <td>{{ schedule.day_of_week }}</td>
+                                            <td>{{ schedule.course }}</td>
+                                            <td>
+                                                <input type="time" name="start_time_{{ schedule.id }}" value="{{ schedule.start_time|date:'H:i' }}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <input type="time" name="end_time_{{ schedule.id }}" value="{{ schedule.end_time|date:'H:i' }}" class="form-control">
+                                            </td>
+                                            <td>
+                                                <select name="category_{{ schedule.id }}" class="form-control">
+                                                    <option value="Morning" {% if schedule.category == 'Morning' %}selected{% endif %}>Morning</option>
+                                                    <option value="Evening" {% if schedule.category == 'Evening' %}selected{% endif %}>Evening</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'delete_schedule' schedule_id=schedule.id %}" class="btn btn-danger">Delete</a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="6">No timetable entries available.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="submit" class="btn btn-primary">Update Timetable</button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div><!-- /.container-fluid -->

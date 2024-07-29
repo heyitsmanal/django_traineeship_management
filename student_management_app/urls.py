@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 from . import HodViews, StaffViews, StudentViews
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -16,11 +17,19 @@ urlpatterns = [
     path('enroll-student/', views.enroll_student, name='enroll_student'),
     path('enroll-success/', views.enroll_success, name='enroll_success'),
     path('get_user_details/', views.get_user_details, name="get_user_details"),
+    path('contact/', views.contact, name='contact'),
+    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
   
 
 
-
-    path('manage_timetable/', HodViews.manage_timetable, name="manage_timetable"),
+    path('delete_excessive_absences/', HodViews.delete_students_with_excessive_absences, name='delete_students_with_excessive_absences'),
+    path('manage_timetable/', HodViews.manage_timetable, name='manage_timetable'),
+    path('group_timetable/<int:group_id>/', HodViews.group_timetable, name='group_timetable'),
+    path('delete_schedule/<int:schedule_id>', HodViews.delete_schedule, name="delete_schedule"),
+    path('delete_group/<int:group_id>/', HodViews.delete_group, name='delete_group'),
     path('logout_user/', views.logout_user, name="logout_user"),
     path('admin_home/', HodViews.admin_home, name="admin_home"),
     path('add_student/', HodViews.add_student, name="add_student"),
@@ -90,7 +99,7 @@ urlpatterns = [
     path('student_view_attendance/', StudentViews.student_view_attendance, name="student_view_attendance"),
     path('student_profile/', StudentViews.student_profile, name="student_profile"),
     path('student_profile_update/', StudentViews.student_profile_update, name="student_profile_update"),
-    path('certificate/preview/<int:certificate_id>/', StudentViews.preview_certificate, name='preview_certificate'),
+    path('certificate/preview/<int:project_id>/', StudentViews.preview_certificate, name='preview_certificate'),
     path('notes/', StudentViews.get_student_notes, name='get_student_notes'),
 
 

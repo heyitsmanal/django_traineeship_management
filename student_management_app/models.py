@@ -48,7 +48,9 @@ class Courses(models.Model):
             student.courses.remove(self)
         super().delete(*args, **kwargs)
 
-class Group(models.Model):
+
+
+class Day(models.Model):
     DAYS_OF_WEEK = [
         ('Monday', 'Monday'),
         ('Tuesday', 'Tuesday'),
@@ -59,87 +61,97 @@ class Group(models.Model):
         ('Sunday', 'Sunday'),
     ]
 
+    name = models.CharField(max_length=10, choices=DAYS_OF_WEEK, unique=True)
+
+    def __str__(self):
+        return self.name
+
+class GroupSchedule(models.Model):
+    group = models.ForeignKey('Group', on_delete=models.CASCADE)
+    course = models.ForeignKey('Courses', on_delete=models.CASCADE)
+    day_of_week = models.ForeignKey('Day', on_delete=models.CASCADE)  # Use ForeignKey to Day model
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    category = models.CharField(
+        max_length=10,
+        choices=[('Morning', 'Morning'), ('Evening', 'Evening')]
+    )
+
+    class Meta:
+        unique_together = ('group', 'course', 'day_of_week', 'start_time', 'end_time', 'category')
+        verbose_name = 'Group Schedule'
+        verbose_name_plural = 'Group Schedules'
+
+    def __str__(self):
+        return f"{self.group} - {self.course} ({self.category}) on {self.day_of_week} from {self.start_time} to {self.end_time}"
+
+ 
+
+class Group(models.Model):
     CATEGORY_CHOICES = [
         ('Morning', 'Morning'),
         ('Evening', 'Evening'),
     ]
 
     id = models.AutoField(primary_key=True)
-    day_of_week = models.CharField(max_length=10, choices=DAYS_OF_WEEK)
+    days_of_week = models.ManyToManyField(Day)
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-    courses = models.ManyToManyField('Courses')  # Assuming Courses model is defined elsewhere
+    courses = models.ManyToManyField('Courses') 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
-    def __str__(self):
-        return f"{self.day_of_week} {self.category} Group"
+    def _str_(self):
+        return f"{self.category} Group"
 
-    @staticmethod
-    def create_initial_schedule(group):
-        # Fetch all courses since all groups (morning/evening) should include all courses
-        courses = Courses.objects.all()
-        
-        # Define the start and end times based on the group's category
-        if group.category == 'Morning':
-            start_time = '09:00:00'  # Example morning start time
-            end_time = '12:00:00'    # Example morning end time
-        else:  # Evening
-            start_time = '14:00:00'  # Example evening start time
-            end_time = '17:00:00'    # Example evening end time
-        
+    def create_initial_schedule(self):
+        courses = list(self.courses.all())
+        days_of_week = list(self.days_of_week.all())
+
+        if self.category == 'Morning':
+            time_slots = [('08:30', '10:30'), ('10:45', '12:30')]  # Morning session times
+        else:
+            time_slots = [('13:30', '15:00'), ('15:15', '16:30')]  # Evening session times
+
+        used_courses = set()
+        used_days = set()
+
         for course in courses:
-            try:
-                # Create a GroupSchedule for each course if it doesn't already exist
-                GroupSchedule.objects.get_or_create(
-                    group=group,
-                    course=course,
-                    day_of_week=group.day_of_week,
-                    start_time=start_time,
-                    end_time=end_time,
-                    category=group.category
-                )
-            except IntegrityError:
-                print(f"Schedule already exists for group {group}, course {course}. Skipping creation.")
+            if course in used_courses:
+                continue  # Skip if the course is already scheduled
+
+            for day in days_of_week:
+                if day in used_days:
+                    continue  # Skip if the day is already used
+
+                for start_time, end_time in time_slots:
+                    # Ensure we do not assign overlapping schedules for the same day
+                    if not GroupSchedule.objects.filter(
+                        group=self, day_of_week=day, start_time=start_time, end_time=end_time
+                    ).exists():
+                        GroupSchedule.objects.create(
+                            group=self,
+                            course=course,
+                            day_of_week=day,
+                            start_time=start_time,
+                            end_time=end_time,
+                            category=self.category
+                        )
+                        print(f"Schedule created for group {self}, course {course}, day {day}.")
+                        used_courses.add(course)
+                        used_days.add(day)
+                        break  # Move to the next course after scheduling
+
+
+@receiver(post_save, sender=Group)
+def group_created_handler(sender, instance, created, **kwargs):
+    if created:
+        instance.create_initial_schedule()
 
 
 
-class GroupSchedule(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    course = models.ForeignKey('Courses', on_delete=models.CASCADE)
-    day_of_week = models.CharField(max_length=10, choices=Group.DAYS_OF_WEEK)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    category = models.CharField(max_length=10, choices=Group.CATEGORY_CHOICES)
 
-    class Meta:
-        unique_together = ('group', 'day_of_week', 'start_time', 'end_time', 'category')
-
-    def __str__(self):
-        return f"{self.group} - {self.course} ({self.category}) on {self.day_of_week} from {self.start_time} to {self.end_time}"
-
-
-
-class GroupSchedule(models.Model):
-    CATEGORY_CHOICES = [
-        ('Morning', 'Morning'),
-        ('Evening', 'Evening'),
-    ]
-
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    course = models.ForeignKey(Courses, on_delete=models.CASCADE)
-    day_of_week = models.CharField(max_length=10, choices=Group.DAYS_OF_WEEK)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
-
-    class Meta:
-        unique_together = ('group', 'day_of_week', 'start_time', 'end_time', 'category')
-
-    def __str__(self):
-        return f"{self.group} - {self.course} ({self.category}) on {self.day_of_week} from {self.start_time} to {self.end_time}"
-
-        
+       
 
 class Staffs(models.Model):
     id = models.AutoField(primary_key=True)
@@ -148,7 +160,7 @@ class Staffs(models.Model):
     profile_pic = models.FileField(default=" ")
     address = models.TextField()
     course = models.ForeignKey(Courses, on_delete=models.DO_NOTHING,default=1)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
+    groups = models.ManyToManyField(Group)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
@@ -174,8 +186,10 @@ class Students(models.Model):
     ])
     code_PPR = models.CharField(max_length=50, null=True,unique=True)
     reference= models.CharField(max_length=100,default="Rabat Sale zamour zaer")
+    # blacklisted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     objects = models.Manager()
 
     def __str__(self):
@@ -215,18 +229,19 @@ class AttendanceReport(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
 
-
-
+class Project(models.Model):
+    title = models.CharField(max_length=555)
+    encadrant = models.ForeignKey(Staffs, on_delete=models.SET_NULL, null=True, blank=True)
+    student = models.ForeignKey('Students', on_delete=models.SET_NULL, null=True, related_name='projects')
+    certificate_generated = models.BooleanField(default=False)
+    def __str__(self):
+        return self.title
+    
 class Certificat(models.Model):
     student = models.ForeignKey(Students, on_delete=models.CASCADE, related_name='certificates')
-    certificate_file = models.FileField(upload_to='certificates/')
-    course_date = models.DateField(default=timezone.now)      
-    course_name = models.CharField(max_length=255)
-    staff_name = models.CharField(max_length=255)
-    grade = models.CharField(max_length=50)
-    feedback = models.TextField()
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='certificates',default="1")  # Add this line
     organization_name = models.CharField(max_length=255, default='C.M.C.F')
-    director_signature = models.ImageField(upload_to='signatures/', null=True, blank=True)
+
 
 
 
@@ -275,18 +290,13 @@ class StudentResult(models.Model):
 
 
 
-class Project(models.Model):
-    title = models.CharField(max_length=555)
-    encadrant = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, limit_choices_to={'user_type': 2}, related_name='projects_as_encadrant')
-    student = models.ForeignKey('Students', on_delete=models.SET_NULL, null=True, related_name='projects')
-    certificate_generated = models.BooleanField(default=False)
+class BlacklistedStudent(models.Model):
+    student = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    reason = models.CharField(max_length=255)
+    date_added = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return self.title
-    
-
-
-
-
+        return f"{self.student.username} - {self.reason}"
 
 
 

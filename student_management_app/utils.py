@@ -1,7 +1,9 @@
 from datetime import datetime
 from io import BytesIO
+from venv import logger
 from django.core.files.base import ContentFile
-from student_management_app.models import Certificat, Project
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import inch
@@ -9,6 +11,12 @@ from reportlab.lib.colors import HexColor
 from django.contrib.staticfiles import finders
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
+
+from student_management_app.models import Certificat, Project, Students
+
+
+
+
 
 def get_project_title(queryset):
     """Extract the title from a QuerySet."""
@@ -59,7 +67,6 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     c.drawImage(background_path, 0, 0, width=width, height=height, mask='auto')
 
     # Define rounded rectangle parameters
-     # Radius for rounded corners
     border_margin = 20  # Margin between border and page edge
 
     # Draw a rounded rectangle around the content
@@ -67,12 +74,6 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     c.setLineWidth(2)  # Line width
     
     # Draw rounded rectangle
-
-
-
-    # Load and position logo
-   
-    logo_y = height - border_margin - 10  # Position logo directly after the top border
 
     # Get current and previous year
     current_year = datetime.now().year
@@ -90,7 +91,7 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     left_margin = border_margin + 60  # Adjust this value to control the left margin
 
     # Adjust positions to add space after the branch image
-    body_start_y = logo_y - 180
+    body_start_y = height - 180
     
     c.drawString(left_margin, body_start_y - 40, "Nous attestons par la présente que :")
     c.drawString(left_margin, body_start_y - 60, f"Nom & Prénom            : {student_name}")
@@ -101,13 +102,13 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     
     c.setFont("Helvetica-Bold", 12)  # Keep project title size as it is
     wrapped_lines = wrap_text(f"<< {project_title} >>", c, width - 4 * border_margin)
-    project_title_y = body_start_y - 130
+    project_title_y = body_start_y - 170
     for line in wrapped_lines:
-        c.drawCentredString(width / 2, project_title_y - 40, line)
+        c.drawCentredString(width / 2, project_title_y, line)
         project_title_y -= 20  # Adjust line spacing as needed
     
     c.setFont("Helvetica", 12)  # Keep body text size as it is
-    c.drawCentredString( width / 2, project_title_y - 40, f"Du {date_start} au {date_end}.")
+    c.drawCentredString(width / 2, project_title_y - 40, f"Du {date_start} au {date_end}.")
     
     c.drawString(left_margin, project_title_y - 70, f"{student_name} a satisfait aux modalités de l'évaluation en soutenant son projet de fin de formation sous le titre de")
     c.drawString(left_margin, project_title_y - 90, f"encadré par son formateur {trainer_name}.")
@@ -128,7 +129,6 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     c.setFont("Helvetica", 12)  # Keep signature text size as it is
     c.drawString(left_margin + 480, signature_text_y, "Signature:")
 
-    
     if include_signature:
         # Add the signature image if include_signature is True
         signature_path = finders.find('media/signature.png')  # Path to your signature image
@@ -139,8 +139,6 @@ def generate_certificate(student_name, ppr, reference, project_title, trainer_na
     
     buffer.seek(0)
     return buffer
-
-
 
 
 

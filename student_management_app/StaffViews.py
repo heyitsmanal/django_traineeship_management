@@ -12,26 +12,25 @@ from django.contrib.auth.decorators import login_required
 
 from student_management_app.forms import ProjectValidationForm
 
-from student_management_app.models import  CustomUser, Group, Note, Project, Staffs, Courses, Students, Attendance, AttendanceReport, StudentResult
-
+from student_management_app.models import  CustomUser, Day, Group, GroupSchedule, Note, Project, Staffs, Courses, Students, Attendance, AttendanceReport, StudentResult
 
 def staff_home(request):
     try:
         # Fetching the staff member
         staff = Staffs.objects.get(admin=request.user)
 
-        # Fetching All Courses under Staff
+        # Fetching all courses under the staff
         courses = Courses.objects.filter(staffs__admin=request.user)
         course_count = courses.count()
         course_ids = courses.values_list('id', flat=True)
         
-        # Total Students in Courses
+        # Total students in courses
         students_count = Students.objects.filter(courses__in=course_ids).count()
 
-        # Fetch All Attendance Count
-        attendance_count = Attendance.objects.filter(course__in=course_ids).count()  # Fixed the lookup to use 'course'
+        # Fetch all attendance count
+        attendance_count = Attendance.objects.filter(course__in=course_ids).count()
 
-        # Fetch Attendance Data by Courses
+        # Fetch attendance data by courses
         course_list = []
         attendance_list = []
         for course in courses:
@@ -39,7 +38,8 @@ def staff_home(request):
             course_list.append(course.course_name)
             attendance_list.append(attendance_count1)
 
-        students_attendance = Students.objects.filter(courses__in=course_ids)  # Updated filter to use 'courses'
+        # Fetch students' attendance
+        students_attendance = Students.objects.filter(courses__in=course_ids)
         student_list = []
         student_list_attendance_present = []
         student_list_attendance_absent = []
@@ -50,6 +50,10 @@ def staff_home(request):
             student_list_attendance_present.append(attendance_present_count)
             student_list_attendance_absent.append(attendance_absent_count)
 
+        # Fetching group schedules and separating by session
+        morning_groups = GroupSchedule.objects.filter(course__in=course_ids, category='morning')
+        evening_groups = GroupSchedule.objects.filter(course__in=course_ids, category='evening')
+
         context = {
             "students_count": students_count,
             "attendance_count": attendance_count,
@@ -58,7 +62,9 @@ def staff_home(request):
             "student_list": student_list,
             "attendance_present_list": student_list_attendance_present,
             "attendance_absent_list": student_list_attendance_absent,
-            "course_count": course_count
+            "course_count": course_count,
+            "morning_groups": morning_groups,
+            "evening_groups": evening_groups,
         }
         return render(request, "staff_template/staff_home_template.html", context)
     except Staffs.DoesNotExist:
@@ -66,28 +72,32 @@ def staff_home(request):
         return redirect('doLogin')
 
 
-
-
-
-
 def get_courses():
     return Courses.objects.all()
 
 def get_groups(staff_id=None, day_of_week=None):
     if staff_id and day_of_week:
-        return Group.objects.filter(staffs__id=staff_id, day_of_week=day_of_week)
+        return Group.objects.filter(staffs__id=staff_id, days_of_week__name=day_of_week)
     elif staff_id:
         return Group.objects.filter(staffs__id=staff_id)
     elif day_of_week:
-        return Group.objects.filter(day_of_week=day_of_week)
+        return Group.objects.filter(days_of_week__name=day_of_week)
     return Group.objects.all()
 
 def get_students_by_group(group_id):
     group = get_object_or_404(Group, id=group_id)
     return Students.objects.filter(group=group)
 
-def get_attendances(course_id, day_of_week, category):
-    return Attendance.objects.filter(course_id=course_id, day_of_week=day_of_week, category=category).values('id', 'attendance_date')
+
+def get_attendances(course_id, day_name, category):
+    # Find the corresponding Day object
+    try:
+        day = Day.objects.get(name=day_name)
+    except Day.DoesNotExist:
+        return Attendance.objects.none()  # Return an empty queryset if the day doesn't exist
+
+    return Attendance.objects.filter(course_id=course_id, group__days_of_week=day, group__category=category).values('id', 'attendance_date')
+
 
 def handle_error(e, message="An error occurred"):
     print(f"Error: {e}")
@@ -98,10 +108,23 @@ def select_course_group(request):
     groups = get_groups()
     return render(request, 'staff_template/manage_attendance_template.html', {'courses': courses, 'groups': groups})
 
-def list_attendances(request, course_id, day_of_week, category):
+def list_attendances(request, course_id, day_name, category):
     try:
-        attendances = get_attendances(course_id, day_of_week, category)
-        students_exist = Students.objects.filter(course_id=course_id, day_of_week=day_of_week, category=category).exists()
+        # Find the corresponding Day object
+        try:
+            day = Day.objects.get(name=day_name)
+        except Day.DoesNotExist:
+            return JsonResponse({'error': 'Invalid day selected.', 'attendances': []})
+
+        # Fetch attendances using the modified get_attendances function
+        attendances = get_attendances(course_id, day_name, category)
+
+        # Check if any students exist for the specified course, day, and category
+        students_exist = Students.objects.filter(
+            course_id=course_id,
+            group__days_of_week=day,
+            group__category=category
+        ).exists()
 
         if not students_exist:
             return JsonResponse({'error': 'No students found for the selected group.', 'attendances': []})
@@ -119,16 +142,22 @@ def view_attendance(request, attendance_id):
     except Exception as e:
         return handle_error(e, 'An error occurred while fetching attendance details. Please try again.')
 
-def get_groups_view(request, course_id):
-    try:
-        day_of_week = request.GET.get('day_of_week', '')
-        groups = get_groups(course_id, day_of_week)
-        response_data = {'groups': list(groups.values('day_of_week', 'category'))}
-        return JsonResponse(response_data)
-    except Exception as e:
-        return handle_error(e, 'An error occurred while fetching groups. Please try again.')
+def get_groups_view(request):
+    day_of_week = request.GET.get('day_of_week')
+    
+    # Retrieve valid day names from the Day model's choices
+    valid_days = [day[0] for day in Day.DAYS_OF_WEEK]
 
-
+    if day_of_week and day_of_week in valid_days:
+        groups = Group.objects.filter(days_of_week__name=day_of_week)
+    else:
+        groups = Group.objects.all()
+    
+    context = {
+        'groups': groups,
+    }
+    
+    return render(request, 'groups_list.html', context)
 
 
 def staff_take_attendance(request):
@@ -142,8 +171,6 @@ def staff_take_attendance(request):
         'course_name': course.course_name
     }
     return render(request, 'staff_template/take_attendance_template.html', context)
-
-
 
 
 @csrf_exempt
@@ -162,9 +189,18 @@ def save_attendance_data(request):
             return JsonResponse({"status": "failed", "message": "attendance_date is missing"}, status=400)
 
         try:
-            # Fetch the group and associated course
+            # Fetch the group
             group = get_object_or_404(Group, id=int(group_id))
-            course = group.course
+            
+            # Retrieve all associated courses
+            courses = group.courses.all()
+            
+            if not courses.exists():
+                messages.error(request, "No courses found for the group.")
+                return JsonResponse({"status": "failed", "message": "No courses found for the group"}, status=404)
+            
+            # For simplicity, assume the group is associated with a single course. If there are multiple, handle as needed.
+            course = courses.first()
             
             # Create or get the Attendance object
             attendance, created = Attendance.objects.get_or_create(
@@ -193,9 +229,16 @@ def save_attendance_data(request):
                 AttendanceReport.objects.create(
                     student_id=student, 
                     attendance_id=attendance, 
-                    status=True  # Mark student as absent
+                    status=True  # Mark student as present
                 )
-            
+                
+                # Check for absences and expel if necessary
+                absences = AttendanceReport.objects.filter(student_id=student, status=False).count()
+                if absences >= 4:
+                    student.blacklisted = True
+                    student.save()
+                    print(f"Student {student.id} has been expelled for excessive absences.")
+
             messages.success(request, "Attendance saved successfully.")
             return JsonResponse({"status": "success", "message": "Attendance saved successfully"})
         
@@ -208,7 +251,6 @@ def save_attendance_data(request):
     return JsonResponse({"status": "failed", "message": "Method not allowed"}, status=405)
 
 
-
 def staff_update_attendance(request):
     try:
         staff = Staffs.objects.get(admin=request.user)
@@ -219,13 +261,10 @@ def staff_update_attendance(request):
         return redirect('some_error_page')
 
 
-
 def get_students(request, groupid):
     students = get_students_by_group(groupid)
     list_data = [{"id": student.id, "name": student.admin.get_full_name()} for student in students]
     return JsonResponse(list_data, safe=False)
-
-
 
 
 def staff_profile(request):
@@ -269,29 +308,30 @@ def staff_profile_update(request):
             return redirect('staff_profile')
 
 
+
 def staff_add_note(request):
     try:
         staff = get_object_or_404(Staffs, admin=request.user)
+       
         staff_id = staff.id
-        print(f"Staff ID: {staff_id}")
+        staff = get_object_or_404(Staffs, id=staff_id)
 
-        groups = get_groups(staff_id=staff_id)
+        groups = staff.groups.all()
+        print(f"Staff ID: {staff.id}")
         print(f"Groups found: {groups.count()}")
 
         context = {
             'groups': groups,
-            'course_name': staff.course.course_name  
+            'course_name': staff.course.course_name if staff.course else 'No Course Assigned'
         }
         return render(request, "staff_template/add_note_template.html", context)
         
     except Staffs.DoesNotExist:
         messages.error(request, "Staff not found.")
-        return redirect('some_error_page')
-
-
-
-
-
+        return render(request, "404.html")  # Ensure to render the correct 404 template
+    except Exception as e:
+        messages.error(request, f"An unexpected error occurred: {str(e)}")
+        return render(request, "404.html") 
 
 
 @csrf_exempt
@@ -299,97 +339,60 @@ def save_notes_data(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=400)
     
+    group_id = request.POST.get('group_id')
+    notes_date = request.POST.get('notes_date')
+    
+    if not group_id or not notes_date:
+        return JsonResponse({"error": "Missing required parameters"}, status=400)
+    
     try:
-        group_id = request.POST.get('group_id')
-        notes_date = request.POST.get('notes_date')
+        group = get_object_or_404(Group, id=group_id)
+        staff = get_object_or_404(Staffs, admin=request.user)
+        staff_course = staff.course  # Get the course taught by the staff
         
+        if not staff_course:
+            return JsonResponse({"error": "Staff does not have an assigned course"}, status=400)
+
+        # Filter courses to only include the one taught by the staff
+        if staff_course not in group.courses.all():
+            return JsonResponse({"error": "The group does not have the staff's course"}, status=400)
+
         # Separate the notes for assignment and exam
         assignment_notes_dict = {key: value for key, value in request.POST.items() if key.startswith('assignment_notes[')}
         exam_notes_dict = {key: value for key, value in request.POST.items() if key.startswith('exam_notes[')}
-        
-        group = get_object_or_404(Group, id=group_id)
-        course = group.course
 
-        for note_key, note_value in assignment_notes_dict.items():
-            student_id = note_key.split('[')[1].split(']')[0]
-            
-            try:
-                student = get_object_or_404(Students, id=student_id)
-                
-                # Create or update the Note object for assignment
-                Note.objects.update_or_create(
-                    student=student,
-                    course=course,
-                    note_type='A',  # 'A' for Assignment
-                    defaults={'content': note_value, 'note_date': notes_date}
-                )
+        def process_notes(note_dict, note_type):
+            for note_key, note_value in note_dict.items():
+                try:
+                    student_id = note_key.split('[')[1].split(']')[0]
+                    student = get_object_or_404(Students, id=student_id)
+                    
+                    # Create or update the Note object for the staff's course
+                    Note.objects.update_or_create(
+                        student=student,
+                        course=staff_course,
+                        note_type=note_type,
+                        defaults={'content': note_value, 'note_date': notes_date}
+                    )
+                except IndexError:
+                    print(f"Error processing {note_type} note_key: {note_key}")
+                    return JsonResponse({"error": "Invalid note key format"}, status=400)
+                except Exception as e:
+                    print(f"An error occurred while saving {note_type} note for student {student_id}: {str(e)}")
+                    return JsonResponse({"error": f"Failed to save {note_type} note"}, status=500)
 
-            except IndexError:
-                messages.error(f"Error processing assignment note_key: {note_key}")
-                return JsonResponse({"error": "Invalid note key format"}, status=400)
-            except Exception as e:
-                print(f"An error occurred while saving assignment note for student {student_id}: {str(e)}")
-
-        for note_key, note_value in exam_notes_dict.items():
-            student_id = note_key.split('[')[1].split(']')[0]
-            
-            try:
-                student = get_object_or_404(Students, id=student_id)
-                
-                # Create or update the Note object for exam
-                Note.objects.update_or_create(
-                    student=student,
-                    course=course,
-                    note_type='E',  # 'E' for Exam
-                    defaults={'content': note_value, 'note_date': notes_date}
-                )
-
-            except IndexError:
-                messages.error(f"Error processing exam note_key: {note_key}")
-                return JsonResponse({"error": "Invalid note key format"}, status=400)
-            except Exception as e:
-                print(f"An error occurred while saving exam note for student {student_id}: {str(e)}")
+        process_notes(assignment_notes_dict, 'A')  # 'A' for Assignment
+        process_notes(exam_notes_dict, 'E')        # 'E' for Exam
 
         return JsonResponse({"success": "Notes saved successfully"})
 
     except Group.DoesNotExist:
         return JsonResponse({"error": f"Group with id {group_id} does not exist"}, status=404)
+    except Staffs.DoesNotExist:
+        return JsonResponse({"error": "Staff not found"}, status=404)
     except Exception as e:
-        messages.error(f"An error occurred: {str(e)}")
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({"error": "Failed to save notes"}, status=500)
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -398,22 +401,30 @@ def save_notes_data(request):
 def validate_project(request):
     search_term = request.GET.get('search', '')
     filter_by = request.GET.get('filter_by', 'projects')
-    
-    # Initialize empty lists for projects and students
     projects = Project.objects.all()
     students = Students.objects.all()
-    
     results_found = True
-    
+
+    if request.method == 'POST':
+        form = ProjectValidationForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            staff = get_object_or_404(Staffs, admin=request.user)
+            project.encadrant = staff
+            project.save()
+            return redirect('validate_project')
+    else:
+        form = ProjectValidationForm()
+
     if search_term:
         if filter_by == 'students':
             filtered_students = Students.objects.filter(
                 Q(first_name__icontains=search_term) | Q(last_name__icontains=search_term)
             )
-            if not filtered_students.exists():
+            if filtered_students.exists():
+                projects = projects.filter(student__in=filtered_students)
+            else:
                 results_found = False
-            # Filter projects by the filtered students
-            projects = projects.filter(student__in=filtered_students)
         elif filter_by == 'projects':
             projects = projects.filter(title__icontains=search_term)
             if not projects.exists():
@@ -423,7 +434,7 @@ def validate_project(request):
         request, 
         'staff_template/validate_projects.html', 
         {
-            'form': ProjectValidationForm(), 
+            'form': form, 
             'projects': projects, 
             'students': students,
             'search_term': search_term, 
@@ -431,6 +442,8 @@ def validate_project(request):
             'results_found': results_found
         }
     )
+
+
 
 
 

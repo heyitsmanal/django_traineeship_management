@@ -1,167 +1,102 @@
 {% extends 'staff_template/base_template.html' %}
 
 {% block page_title %}
-    Staff Home
+    Staff Home - Schedule
 {% endblock page_title %}
 
 {% block main_content %}
 
 {% load static %}
 
-    {% comment %} <section class="content">
-        <div class="container-fluid">
-                <!-- ./col -->
-                   <div class="col-lg-4 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-danger">
-                    <div class="inner">
-                        <h3>{{ course_count }}</h3>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
-                        <p>Total Courses</p>
+<style>
+    .table-bordered thead th {
+        border-bottom-width: 2px;
+        color: #343a40;
+    }
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6;
+    }
+    .table td, .table th {
+        padding: .75rem;
+        vertical-align: middle;
+    }
+    .schedule-section {
+        margin-bottom: 30px;
+    }
+</style>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="container">
+                <div class="schedule-section">
+                    <h4>Morning Groups</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Group</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in morning_groups %}
+                                    <tr>
+                                        <td>{{ schedule.day_of_week }}</td>
+                                        <td>{{ schedule.group.id }}</td>
+                                        <td>{{ schedule.start_time }}</td>
+                                        <td>{{ schedule.end_time }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">No morning schedule available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="icon">
-                        <i class="ion ion-pie-graph"></i>
+                </div>
+                
+                <div class="schedule-section">
+                    <h4>Evening Groups</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Group</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in evening_groups %}
+                                    <tr>
+                                        <td>{{ schedule.day_of_week }}</td>
+                                        <td>{{ schedule.group.id }}</td>
+                                        <td>{{ schedule.start_time }}</td>
+                                        <td>{{ schedule.end_time }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">No evening schedule available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                   </div>
-                <!-- ./col -->
-        </div><!-- /.container-fluid -->
-    </section> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    {% block custom_js %}
-      <script>
-         $(document).ready(function(){
-             //Code for Pie Chart
-              var pieData        = {
-              labels: [
-                  'Leave', 
-                  'Attendance', 
-              ],
-              datasets: [
-                  {
-                  data: [{{ leave_count }}, {{ attendance_count }}],
-                  backgroundColor : ['#f56954', '#00a65a'],
-                  }
-              ]
-              }
-             //Code for Pie Chart
-              var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-              var pieData        = pieData;
-              var pieOptions     = {
-              maintainAspectRatio : false,
-              responsive : true,
-              }
-              //Create pie or douhnut chart
-              // You can switch between pie and douhnut using the method below.
-              var pieChart = new Chart(pieChartCanvas, {
-              type: 'pie',
-              data: pieData,
-              options: pieOptions      
-              })
-  
-              //Code for Bar Chart
-              /*
-              var subjects = {{ subject_name|safe }}
-              var data_present = {{ data_present }}
-              var data_absent = {{ data_absent }}
-              */
-              var attendance_list = {{ attendance_list }}
-              var subject_list = {{ subject_list|safe }}
-  
-              //Dataset for Bar Chart
-              
-              var areaChartData = {
-              labels  : subject_list,
-              datasets: [
-                  {
-                  label               : 'Subject Attend Chart',
-                  backgroundColor     : 'rgba(60,141,188,0.9)',
-                  borderColor         : 'rgba(60,141,188,0.8)',
-                  pointRadius          : false,
-                  pointColor          : '#3b8bba',
-                  pointStrokeColor    : 'rgba(60,141,188,1)',
-                  pointHighlightFill  : '#fff',
-                  pointHighlightStroke: 'rgba(60,141,188,1)',
-                  data                : attendance_list
-                  },
-              ]
-              }
-  
-  
-              var barChartCanvas = $('#barChart').get(0).getContext('2d')
-              var barChartData = jQuery.extend(true, {}, areaChartData)
-              var temp1 = areaChartData.datasets[0]
-              barChartData.datasets[0] = temp1
-  
-              var barChartOptions = {
-              responsive              : true,
-              maintainAspectRatio     : false,
-              datasetFill             : false
-              }
-  
-              var barChart = new Chart(barChartCanvas, {
-              type: 'bar', 
-              data: barChartData,
-              options: barChartOptions
-              })
-  
-  
-              //Code for Stuent Attendnace by Subjects Bar Chart
-              var student_list = {{ student_list|safe }};
-              var attendance_present_list = {{ attendance_present_list }}
-              var attendance_absent_list = {{ attendance_absent_list }}
-  
-              var areaChartData2 = {
-              labels  : student_list,
-              datasets: [
-                  {
-                  label               : 'Student Attendance Chart for Present',
-                  backgroundColor     : 'rgba(60,141,188,0.9)',
-                  borderColor         : 'rgba(60,141,188,0.8)',
-                  pointRadius          : false,
-                  pointColor          : '#3b8bba',
-                  pointStrokeColor    : 'rgba(60,141,188,1)',
-                  pointHighlightFill  : '#fff',
-                  pointHighlightStroke: 'rgba(60,141,188,1)',
-                  data                : attendance_present_list
-                  },
-                  {
-                  label               : 'Student Attendance Chart for Absent',
-                  backgroundColor     : 'rgba(210, 214, 222, 1)',
-                  borderColor         : 'rgba(210, 214, 222, 1)',
-                  pointRadius         : false,
-                  pointColor          : 'rgba(210, 214, 222, 1)',
-                  pointStrokeColor    : '#c1c7d1',
-                  pointHighlightFill  : '#fff',
-                  pointHighlightStroke: 'rgba(220,220,220,1)',
-                  data                : attendance_absent_list
-                  },
-              ]
-              }
-  
-  
-              var barChartCanvas2 = $('#barChart2').get(0).getContext('2d')
-              var barChartData2 = jQuery.extend(true, {}, areaChartData2)
-              var temp2 = areaChartData2.datasets[0]
-              barChartData2.datasets[0] = temp2
-  
-              var barChartOptions2 = {
-              responsive              : true,
-              maintainAspectRatio     : false,
-              datasetFill             : false
-              }
-  
-              var barChart2 = new Chart(barChartCanvas2, {
-              type: 'bar', 
-              data: barChartData2,
-              options: barChartOptions2
-              })
-  
-         })
-      </script>
-    {% endblock custom_js %}
+{% endblock main_content %}
 
-
-    
-  {% endblock main_content %}
+{% block custom_js %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% endblock custom_js %}

@@ -1,7 +1,64 @@
 {% extends 'base.html' %}
 {% load static %} 
 
+
+
 {% block content %}
+
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>Homepage</title>
+<meta name="description" content="Explore our professional training center in Salé, offering cutting-edge courses in Information and Communication Technology (ICT). Our expert instructors and modern teaching methods ensure you’re prepared for the future of technology.">
+<meta name="keywords" content="training, ICT, technology, courses, Salé, professional development">
+
+<!-- Favicons -->
+<link href="{% static 'media/logoCMCF.png' %}" rel="icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="{% static 'media/css/style.css' %}" rel="stylesheet">
+
+{% block navbar %}
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top d-flex align-items-center ">
+    <div class="container d-flex align-items-center">
+      <div class="logo me-auto">
+        <h1>
+          <a href="{% url 'homepage' %}"><img src="{% static 'media/logoCMCF.png' %}" alt="" class="img-fluid"></a>
+          <a href="{% url 'homepage' %}">C.M.C.F</a>
+        </h1>
+      </div>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto active" href="{% url 'homepage' %}">Accueil</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'login' %}">Connexion</a></li>
+          <li><a class="nav-link scrollto" href="{% url 'enroll_student' %}">Inscription</a></li>
+        </ul>
+      </nav><!-- .navbar -->
+      <div class="header-social-links d-flex align-items-center">
+        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+      </div>
+    </div>
+  </header><!-- End Header -->
+{% endblock %}
+
+
+
+
 
     <body class="hold-transition login-page">
 <div class="login-box">
@@ -10,14 +67,14 @@
 <div class="image">
             <img src="{% static 'media/logoCMCF.png' %}" class="img-circle elevation-2" alt="piet Image">
           </div>
-    <a href="{% url 'login' %}"><b> CMCF</b><br> Student  Management System</a>
+    <a href="{% url 'login' %}"><b> CMCF</b><br>  Login </a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in</p>
+      <p class="login-box-msg mt-3">Sign in</p>
 
-      <form action="{% url 'doLogin' %}" method="POST">
+      <form action="{% url 'doLogin' %}" method="POST" >
       {% csrf_token %}
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" name="email">
@@ -27,7 +84,7 @@
             </div>
           </div>
         </div>
-        <div class="input-group mb-3">
+        <div class="input-group mb-2 ">
           <input type="password" class="form-control" placeholder="Password" name="password">
           <div class="input-group-append">
             <div class="input-group-text">
@@ -36,13 +93,13 @@
           </div>
         </div>
 
-          <div class="col-12">
+          <div class="col-12 mt-3">
             <button type="submit" class="btn btn-primary btn-block">Sign In</button>
           </div>
 
-          {% comment %} <div class="col-12 text-center">
-            <a href="{% url 'password_reset' %}">Reset Password</a>
-          </div>  {% endcomment %}
+            <div class="col-12 text-center mt-2">
+              forgot your password?  &nbsp; <a href="{% url 'password_reset' %}">Reset Password</a>
+            </div> 
 
           {% comment %} Display Messages {% endcomment %}
           {% if messages %}
@@ -72,7 +129,7 @@
   <strong>Copyright &copy; {% now "Y" %}, <a target="blank" href="https://shorturl.at/QStUE">Center Moroccan Korean Training Technology Information And Communication In Education</a>.</strong> 
   <br>
   <div style="text-align:center;">
-    Developed by Aboulakjam manal,Bouguidou Omar (2024 Emsi)
+    Developed by Aboulakjam manal , Bouguidou Omar (2024 Emsi)
   </div>
 </footer>
 <!-- /.login-box -->
