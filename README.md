@@ -1,169 +1,102 @@
-# Django Student Attendance System
+Django Student Management System
+   This project is a comprehensive Student Management System developed using Python with the Django framework, designed for educational purposes.
 
-This is a Student Management System Developed for Educational Purpose using Python (Django).
+--> If you find this project valuable, please consider starring the repository to show your support.
 
-And if you like this project then ADD a STAR ⭐️ to this project 👆
-
-## Features of this Project
-
-### A. Admin Users Can
-
-1. See Overall Summary Charts of Stuudents Performance, Staffs Perfomrances, Courses, etc.
-2. Manage Staffs (Add, Update and Delete)
-3. Manage Students (Add, Update and Delete)
-4. Manage Courses (Add, Update and Delete)
-5. Manage Subjects (Add, Update and Delete)
-6. Manage Sessions (Add, Update and Delete)
-7. View Student Attendance
-
-### B. Staff/Teachers Can
-
-1. See the Overall Summary Charts related to their students, their subjects, leave status, etc.
-2. Take/Update Students Attendance
-3. Add/Update Result
-4. Send Feedback to HOD
-
-### C. Students Can
-
-1. See the Overall Summary Charts related to their attendance, their subjects, leave status, etc.
-2. View Attendance
-3. View Result
-4. Send Feedback to HOD
+Features
+   ADMIN USERS
+      Overview Dashboards: View summary charts for student performance, staff performance, and course statistics.
+      Staff Management: Add, update, and delete staff members.
+      Student Management: Add, update, and delete student records.
+      Course Management: Add, update, and delete courses.
+      Subject Management: Add, update, and delete subjects.
+      Session Management: Add, update, and delete academic sessions.
+      Attendance Monitoring: View and manage student attendance.
+   STAFFS/TEACHERS
+      Summary Charts: Access charts related to students, subjects, and leave status.
+      Attendance Management: Record and update student attendance.
+      Results Management: Add and update student results.
+   STUDENTS
+      Summary Charts: View charts related to attendance, subjects, and leave status.
+      Attendance View: Check personal attendance records.
+      Results View: Access academic results.
 
 
+Installation and Setup
 
-## How to Install and Run this project?
+   Prerequisites
+      * Git: Version control system
+         --> Download Git
+      * Python: Latest version
+         --> Download Python
+      * Pip: Python package manager
+         --> Pip Installation Guide
+         
 
-### Pre-Requisites:
+Installation Steps
 
-1. Install Git Version Control
-   [ https://git-scm.com/ ]
+   1. Create a Directory for the Project
+      --> mkdir django-student-management-system
+      --> cd django-student-management-system
+     
+   2. Set Up a Virtual Environment
+      
+         a.Install Virtual Environment:
+            --> pip install virtualenv
+      
+         b.Create the Virtual Environment:
+            For Windows:
+               --> python -m venv venv
+         
+            For macOS/Linux:
+               --> python3 -m venv venv
+      
+         c.Activate the Virtual Environment:
+            For Windows:
+               --> venv\Scripts\activate
+            For macOS/Linux:
+               --> source venv/bin/activate
+         
+    3.Clone the Repository
+         --> git clone https://github.com/yourusername/django-student-management-system.git
+         --> cd django-student-management-system
+         
+   4.Install Project Dependencies
+         --> pip install -r requirements.txt
+         
+   5.Configure Allowed Hosts
+         Open settings.py in your project.
+         Update the ALLOWED_HOSTS setting:
+                ALLOWED_HOSTS = ['*']
+         
+   6.Run the Development Server
+         For Windows:
+            python manage.py runserver
+         For macOS/Linux:
+            python3 manage.py runserver
+            
+   7.Create a Superuser
+         --> python manage.py createsuperuser
+         Follow the prompts to set up the superuser credentials.
+         
+Default Credentials for Testing:
 
-2. Install Python Latest Version
-   [ https://www.python.org/downloads/ ]
+   * HOD/SuperAdmin
+      Email: admin@gmail.com
+      Password: admin
+   * Staff
+      Email: staff@gmail.com
+      Password: staff
+   * Student
+      Email: student@gmail.com
+      Password: student
+   
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-3. Install Pip (Package Manager)
-   [ https://pip.pypa.io/en/stable/installing/ ]
+Copyright © 2022 @ritikbanger
 
-_Alternative to Pip is Homebrew_
+Permission is granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the following conditions:
 
-### Installation
-
-**1. Create a Folder where you want to save the project**
-
-**2. Create a Virtual Environment and Activate**
-
-Install Virtual Environment First
-
-```
-$  pip install virtualenv
-```
-
-Create Virtual Environment
-
-For Windows
-
-```
-$  python -m venv venv
-```
-
-For Mac
-
-```
-$  python3 -m venv venv
-```
-
-Activate Virtual Environment
-
-For Windows
-
-```
-$  venv\scripts\activate
-```
-
-For Mac
-
-```
-$  venv\bin\activate
-```
-
-**3. Clone this project**
-
-```
-$  git clone https://github.com/ritikbanger/django-student-attendance-system.git
-```
-
-Then, Enter the project
-
-```
-$  cd django-student-attendance-system
-```
-
-**4. Install Requirements from 'requirements.txt'**
-
-```python
-$  pip install -r requirements.txt
-```
-
-**5. Add the hosts**
-
-- Got to settings.py file
-- Then, On allowed hosts, Add [‘*’].
-
-```python
-ALLOWED_HOSTS = ['*']
-```
-
-_No need to change on Mac._
-
-**6. Now Run Server**
-
-Command for PC:
-
-```python
-$ python manage.py runserver
-```
-
-Command for Mac:
-
-```python
-$ python3 manage.py runserver
-```
-
-**7. Login Credentials**
-
-Create Super User (HOD)
-
-```
-$  python manage.py createsuperuser
-```
-
-Then Add Email, Username and Password
-
-**or Use Default Credentials**
-
-_For HOD /SuperAdmin_
-Email: admin@gmail.com
-Password: admin
-
-_For Staff_
-Email: staff@gmail.com
-Password: staff
-
-_For Student_
-Email: student@gmail.com
-Password: student
-
-## Copyrights
-
-Coded by @ritikBanger, @mohitTaimni, and @ronitKhowal
-
-Developed for Poornima Group, Jaipur
-
-Copyright 2022 @ritikbanger
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Include the copyright notice and permission notice in all copies or substantial portions of the Software.
+The Software is provided "as is", without warranty of any kind. The authors or copyright holders are not liable for any claims, damages, or other liabilities.
