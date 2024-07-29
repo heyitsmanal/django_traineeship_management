@@ -1,6 +1,6 @@
 # Django Student Attendance System
 
-This is a Student Attendance System Developed for Educational Purpose using Python (Django).
+This is a Student Management System Developed for Educational Purpose using Python (Django).
 
 And if you like this project then ADD a STAR ⭐️ to this project 👆
 
@@ -15,28 +15,22 @@ And if you like this project then ADD a STAR ⭐️ to this project 👆
 5. Manage Subjects (Add, Update and Delete)
 6. Manage Sessions (Add, Update and Delete)
 7. View Student Attendance
-8. Review and Reply Student/Staff Feedback
-9. Review (Approve/Reject) Student/Staff Leave
 
 ### B. Staff/Teachers Can
 
 1. See the Overall Summary Charts related to their students, their subjects, leave status, etc.
 2. Take/Update Students Attendance
 3. Add/Update Result
-4. Apply for Leave
-5. Send Feedback to HOD
+4. Send Feedback to HOD
 
 ### C. Students Can
 
 1. See the Overall Summary Charts related to their attendance, their subjects, leave status, etc.
 2. View Attendance
 3. View Result
-4. Apply for Leave
-5. Send Feedback to HOD
+4. Send Feedback to HOD
 
-## Support Developer
 
-1. Add a Star 🌟 to this 👆 Repository
 
 ## How to Install and Run this project?
 
