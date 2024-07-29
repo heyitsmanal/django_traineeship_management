@@ -45,10 +45,8 @@ INSTALLATION AND SETUP
 
     A.Create a Directory for the Project
 
-
         mkdir django-student-management-system
         cd django-student-management-system
-
 
     B.Set Up a Virtual Environment
 
