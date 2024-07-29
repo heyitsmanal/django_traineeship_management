@@ -45,75 +45,66 @@ INSTALLATION AND SETUP
 
     A.Create a Directory for the Project
 
-        bash
-        Copier le code
         mkdir django-student-management-system
         cd django-student-management-system
 
     B.Set Up a Virtual Environment
 
         Install Virtual Environment:
-          bash
-          Copier le code
+          
           pip install virtualenv
           
         Create the Virtual Environment:
           For Windows:
-          bash
-          Copier le code
+          
           python -m venv venv
+          
           For macOS/Linux:
-          bash
-          Copier le code
+          
           python3 -m venv venv
           
         Activate the Virtual Environment:
           For Windows:
-          bash
-          Copier le code
+          
           venv\Scripts\activate
+          
           For macOS/Linux:
-          bash
-          Copier le code
+          
           source venv/bin/activate
           
       3.Clone the Repository
 
-        bash
-        Copier le code
+
         git clone https://github.com/yourusername/django-student-management-system.git
         cd django-student-management-system
       
       4.Install Project Dependencies
 
-        bash
-        Copier le code
+        
         pip install -r requirements.txt
       
       5.Configure Allowed Hosts
 
         Open settings.py in your project.
         Update the ALLOWED_HOSTS setting:
-        python
-        Copier le code
+        
         ALLOWED_HOSTS = ['*']
         
       6.Run the Development Server
 
         For Windows:
-        bash
-        Copier le code
+        
         python manage.py runserver
+        
         For macOS/Linux:
-        bash
-        Copier le code
+        
         python3 manage.py runserver
         
       7.Create a Superuser
 
-        bash
-        Copier le code
+        
         python manage.py createsuperuser
+        
         Follow the prompts to set up the superuser credentials.
     
 
