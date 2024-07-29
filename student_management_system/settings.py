@@ -4,10 +4,7 @@ import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "student_management_system.settings")
 
-# Celery configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_TIMEZONE = 'UTC'
+
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
