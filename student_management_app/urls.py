@@ -8,6 +8,7 @@ from . import HodViews, StaffViews, StudentViews
 from django.contrib.auth import views as auth_views
 
 
+
 urlpatterns = [
     # path('accounts/', include('django.contrib.auth.urls')),
   
@@ -18,12 +19,14 @@ urlpatterns = [
     path('enroll-success/', views.enroll_success, name='enroll_success'),
     path('get_user_details/', views.get_user_details, name="get_user_details"),
     path('contact/', views.contact, name='contact'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-  
 
+    path('reinitialisation/', views.CustomPasswordResetView.as_view(), name='custom_password_reset'),
+    path('reinitialisation/reussite/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reinitialisation/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(),
+	 name='password_reset_confirm'),
+    path('reinitialisation/complet/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+   
+  
 
     path('delete_excessive_absences/', HodViews.delete_students_with_excessive_absences, name='delete_students_with_excessive_absences'),
     path('manage_timetable/', HodViews.manage_timetable, name='manage_timetable'),
@@ -78,12 +81,10 @@ urlpatterns = [
     path('staff_take_attendance/', StaffViews.staff_take_attendance, name='staff_take_attendance'),
     path('get_students/<int:groupid>/', StaffViews.get_students, name='get_students'),
     path('save_attendance_data/', StaffViews.save_attendance_data, name="save_attendance_data"),
-    path('staff_update_attendance/', StaffViews.staff_update_attendance, name="staff_update_attendance"),
     path('staff_profile/', StaffViews.staff_profile, name="staff_profile"),
     path('staff_profile_update/', StaffViews.staff_profile_update, name="staff_profile_update"),
     path('add_note/', StaffViews.staff_add_note, name="add_note"),
     path('save_notes_data/', StaffViews.save_notes_data, name="save_notes_data"),
-    path('select_course_group/', StaffViews.select_course_group, name='select_course_group'),
     path('get_groups/<int:course_id>/', StaffViews.get_groups, name='get_groups'),
     path('list_attendances/<int:course_id>/<int:group_id>/', StaffViews.list_attendances, name='list_attendances'),
     path('view_attendance/<int:attendance_id>/', StaffViews.view_attendance, name='view_attendance'),

@@ -829,7 +829,6 @@ def group_detail(request, group_id):
     return render(request, 'hod_template/group_detail.html', context)
 
 
-
 def add_group(request):
     if request.method == 'POST':
         form = GroupForm(request.POST)
@@ -840,9 +839,12 @@ def add_group(request):
             # Handle many-to-many relationships
             days_of_week = form.cleaned_data.get('days_of_week')
             group.days_of_week.set(days_of_week)  # Set the selected days of the week
-            
+
             all_courses = Courses.objects.all()
             group.courses.set(all_courses)  # Assign all courses to the group
+
+            # Add success message
+            messages.success(request, 'Group successfully created!')
 
             return redirect('manage_groups')  # Ensure this URL name is correct
         else:
@@ -858,17 +860,19 @@ def add_group(request):
     return render(request, 'hod_template/add_group_template.html', context)
 
 
-
 def delete_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     
     if request.method == 'POST':
         group.delete()
+
+        # Add success message
+        messages.success(request, 'Group successfully deleted!')
+        
         return redirect('manage_groups')  # Redirect to a page that lists the groups
-    
+
     # If it's not a POST request, redirect to a safe page
     return redirect('manage_groups')
-
 
 
 

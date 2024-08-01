@@ -9,9 +9,14 @@ import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import  EnrollStudentForm
+
+from student_management_system.settings import LANGUAGES
+from .forms import  CustomPasswordResetForm, EnrollStudentForm
 from .models import BlacklistedStudent, Courses, CustomUser, Students
 from .EmailBackEnd import EmailBackEnd  # Assuming you have a custom backend
+from django.contrib.auth.views import PasswordResetView
+
+
 
 def homepage(request):
     return render(request, 'homepage.html')
@@ -127,3 +132,30 @@ def logout_user(request):
 
 def contact(request):
     return render(request, 'contact.html')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+    template_name = 'registration/password_reset_form.html'
+    html_email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = "registration/password_reset_subject.txt"
+
+
+
+
+
+
+
+
+
+
+
+# from django.utils import translation
+# from django.http import HttpResponseRedirect
+
+# def set_language(request, lang_code):
+#     response = HttpResponseRedirect(request.POST.get('next', '/'))
+#     if lang_code in dict(LANGUAGES):
+#         translation.activate(lang_code)
+#         request.session[translation.LANGUAGE_SESSION_KEY] = lang_code
+#     return response

@@ -1,7 +1,7 @@
 {% extends 'staff_template/base_template.html' %}
 
 {% block page_title %}
-    manage attendance
+    Manage Attendance
 {% endblock page_title %}
 
 {% block main_content %}
@@ -31,50 +31,39 @@
 </div>
 {% endif %}
 
-
-
-<a class="btn btn-primary ml-3" href="{% url 'staff_take_attendance' %}" role="button">+ take attendance </a> <br/>&nbsp; 
-
-
+<a class="btn btn-primary ml-3" href="{% url 'staff_take_attendance' %}" role="button">+ Take Attendance</a> <br/>&nbsp; 
 
 <div class="container mt-4">
-    <h1>Select Course and Group</h1>
-    <form id="selectForm" class="form-inline mt-5">
-        <div class="form-group mb-2">
-            <label for="course" class="mr-2">Course:</label>
-            <select id="course" name="course" class="form-control">
-                <option value="" disabled selected>Select a course</option>
-                {% for course in courses %}
-                <option value="{{ course.id }}">{{ course.course_name }}</option>
-                {% endfor %}
-            </select>
+    <h1>Manage Attendance</h1>
+
+    <!-- Display Groups Based on Category -->
+    <div class="mt-4">
+        <h2>Morning Groups</h2>
+        <div id="morningGroups" class="mt-2">
+            {% for group in groups %}
+                {% if group.category == 'Morning' %}
+                    <div class="group-row" data-group-id="{{ group.id }}">
+                        {{ group }} <!-- Display group information -->
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
-    
-        <div class="form-group mb-2 ml-3">
-            <label for="day_of_week" class="mr-2">Day:</label>
-            <select id="day_of_week" name="day_of_week" class="form-control">
-                <option value="" disabled selected>Select a day</option>
-            </select>
+
+        <h2 class="mt-4">Evening Groups</h2>
+        <div id="eveningGroups" class="mt-2">
+            {% for group in groups %}
+                {% if group.category == 'Evening' %}
+                    <div class="group-row" data-group-id="{{ group.id }}">
+                        {{ group }} <!-- Display group information -->
+                    </div>
+                {% endif %}
+            {% endfor %}
         </div>
-    
-        <div class="form-group mb-2 ml-3">
-            <label for="category" class="mr-2">Category:</label>
-            <select id="category" name="category" class="form-control">
-                <option value="" disabled selected>Select a category</option>
-            </select>
-        </div>
-    
-        <button type="button" id="fetchAttendances" class="btn btn-primary mb-2 ml-3">Fetch Attendances</button>
-    </form>
-    
+    </div>
 
     <div id="attendancesTable" class="mt-4"></div>
     <div id="attendanceDetails" class="mt-4"></div>
-    
-
 </div>
-
-
 
 {% block scripts %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -108,7 +97,7 @@
                     dataType: 'json',
                     success: function(data) {
                         // Clear previous data
-                        $('#attendance-details').empty();
+                        $('#attendanceDetails').empty();
         
                         // Construct table
                         var table = $('<table class="table">');
@@ -126,8 +115,8 @@
                             tbody.append(row);
                         }
         
-                        // Append table to attendance-details div
-                        $('#attendance-details').append(table);
+                        // Append table to attendanceDetails div
+                        $('#attendanceDetails').append(table);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching attendance details:', error);
@@ -168,10 +157,4 @@
     </script>
 {% endblock %}
 
-
-
-
-
-    
 {% endblock main_content %}
-

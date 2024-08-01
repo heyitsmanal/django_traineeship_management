@@ -1,5 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 import os
+from django.utils.translation import gettext_lazy as _
+
+
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "student_management_system.settings")
@@ -41,6 +44,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'student_management_app.LoginCheckMiddleWare.LoginCheckMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'student_management_system.urls'
@@ -115,3 +120,41 @@ AUTH_USER_MODEL = 'student_management_app.CustomUser'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_PORT_TLS = 465
+EMAIL_HOST_USER = 'organisime.cmcf@gmail.com'
+EMAIL_HOST_PASSWORD = 'dlup djjl xcar ocoo'
+DEFAULT_FROM_EMAIL = 'cmcf <organisime.cmcf@gmail.com>'
+
+
+
+
+
+
+
+
+
+
+
+
+# USE_I18N = True
+# USE_L10N = True
+# USE_TZ = True
+
+# LANGUAGES = [
+#     ('en', _('English')),
+#     ('ar', _('Arabic')),
+#     # other languages
+# ]
+
+# LOCALE_PATHS = [
+#     os.path.join(BASE_DIR, 'locale'),
+# ]
+
