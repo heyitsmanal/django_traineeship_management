@@ -1,169 +1,117 @@
-# Django Student Attendance System
 
-This is a Student Management System Developed for Educational Purpose using Python (Django).
+# Django Student Management System
 
-And if you like this project then ADD a STAR ⭐️ to this project 👆
+This project is a comprehensive Student Management System developed using Python with the Django framework, designed for educational purposes.
 
-## Features of this Project
 
-### A. Admin Users Can
+## Features
 
-1. See Overall Summary Charts of Stuudents Performance, Staffs Perfomrances, Courses, etc.
-2. Manage Staffs (Add, Update and Delete)
-3. Manage Students (Add, Update and Delete)
-4. Manage Courses (Add, Update and Delete)
-5. Manage Subjects (Add, Update and Delete)
-6. Manage Sessions (Add, Update and Delete)
-7. View Student Attendance
+ Admin Users
+- Overview Dashboards: View summary charts for student performance, staff performance, and course statistics.
+- Staff Management: Add, update, and delete staff members.
+- Student Management: Add, update, and delete student records.
+- Course Management: Add, update, and delete courses.
+- Subject Management: Add, update, and delete subjects.
+- Session Management: Add, update, and delete academic sessions.
+- Attendance Monitoring: View and manage student attendance
 
-### B. Staff/Teachers Can
+Staff/Teachers
 
-1. See the Overall Summary Charts related to their students, their subjects, leave status, etc.
-2. Take/Update Students Attendance
-3. Add/Update Result
-4. Send Feedback to HOD
+- Summary Charts: Access charts related to students, subjects, and leave status.
+- Attendance Management: Record and update student attendance.
+- Results Management: Add and update student results.
 
-### C. Students Can
+Students
 
-1. See the Overall Summary Charts related to their attendance, their subjects, leave status, etc.
-2. View Attendance
-3. View Result
-4. Send Feedback to HOD
+- Summary Charts: View charts related to attendance, subjects, and leave status.
+- Attendance View: Check personal attendance records.
+- Results View: Access academic results.
 
 
 
-## How to Install and Run this project?
+## Prerequisites
 
-### Pre-Requisites:
+- Git: Version control system
+    - Download Git
+- Python: Latest version
+    - Download Python
+- Pip: Python package manager
+    - Pip Installation Guide
 
-1. Install Git Version Control
-   [ https://git-scm.com/ ]
+## Installation
 
-2. Install Python Latest Version
-   [ https://www.python.org/downloads/ ]
+1. Create a Directory for the Project
 
-3. Install Pip (Package Manager)
-   [ https://pip.pypa.io/en/stable/installing/ ]
-
-_Alternative to Pip is Homebrew_
-
-### Installation
-
-**1. Create a Folder where you want to save the project**
-
-**2. Create a Virtual Environment and Activate**
-
-Install Virtual Environment First
-
+```bash
+  mkdir django-student-management-system
+  cd django-student-management-system
 ```
-$  pip install virtualenv
+2. Set Up a Virtual Environment
+
+```bash
+  pip install virtualenv
 ```
-
-Create Virtual Environment
-
-For Windows
-
+```bash
+  python -m venv venv
 ```
-$  python -m venv venv
+```bash
+  venv\Scripts\activate
 ```
-
-For Mac
-
+3. Clone the Repository
+```bash
+  git clone https://github.com/yourusername/django-student-management-system.git
+  cd django-student-management-system
 ```
-$  python3 -m venv venv
+4. Install Project Dependencies
+
+```bash
+  pip install -r requirements.txt
 ```
 
-Activate Virtual Environment
+5. Configure Allowed Hosts in settings.py  (not necessary)
 
-For Windows
-
-```
-$  venv\scripts\activate
+```bash
+  ALLOWED_HOSTS = ['*']
 ```
 
-For Mac
+6. Run the Development Server
 
-```
-$  venv\bin\activate
-```
-
-**3. Clone this project**
-
-```
-$  git clone https://github.com/ritikbanger/django-student-attendance-system.git
+```bash
+  python manage.py runserver
 ```
 
-Then, Enter the project
+7. Create a Superuser
 
+```bash
+    python manage.py createsuperuser
 ```
-$  cd django-student-attendance-system
-```
+Follow the prompts to set up the superuser credentials.
 
-**4. Install Requirements from 'requirements.txt'**
 
-```python
-$  pip install -r requirements.txt
-```
+## Default credentials 
 
-**5. Add the hosts**
+- HOD/SuperAdmin
 
-- Got to settings.py file
-- Then, On allowed hosts, Add [‘*’].
+    - Email:     admin@gmail.com
+    - Password:  admin
+    
+- Staff/teacher
 
-```python
-ALLOWED_HOSTS = ['*']
-```
+    - Email:     staff@gmail.com
+    - Password:  staff
 
-_No need to change on Mac._
+- Student
 
-**6. Now Run Server**
+    - Email:     student@gmail.com
+    - Password:  student
 
-Command for PC:
+## License
 
-```python
-$ python manage.py runserver
-```
+[MIT](https://choosealicense.com/licenses/mit/) This project is licensed under the MIT License. See the LICENSE file for details.
 
-Command for Mac:
+Copyright © 2022 @ritikbanger
 
-```python
-$ python3 manage.py runserver
-```
+Permission is granted, free of charge, to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the following conditions:
 
-**7. Login Credentials**
-
-Create Super User (HOD)
-
-```
-$  python manage.py createsuperuser
-```
-
-Then Add Email, Username and Password
-
-**or Use Default Credentials**
-
-_For HOD /SuperAdmin_
-Email: admin@gmail.com
-Password: admin
-
-_For Staff_
-Email: staff@gmail.com
-Password: staff
-
-_For Student_
-Email: student@gmail.com
-Password: student
-
-## Copyrights
-
-Coded by @ritikBanger, @mohitTaimni, and @ronitKhowal
-
-Developed for Poornima Group, Jaipur
-
-Copyright 2022 @ritikbanger
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Include the copyright notice and permission notice in all copies or substantial portions of the Software.
+The Software is provided "as is", without warranty of any kind. The authors or copyright holders are not liable for any claims, damages, or other liabilities.
