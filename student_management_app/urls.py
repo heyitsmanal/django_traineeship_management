@@ -7,11 +7,11 @@ from . import views
 from . import HodViews, StaffViews, StudentViews
 from django.contrib.auth import views as auth_views
 
+from django.views.i18n import set_language
 
 
 urlpatterns = [
     # path('accounts/', include('django.contrib.auth.urls')),
-  
     path('', views.homepage, name="homepage"),
     path('login/', views.loginPage, name="login"),
     path('doLogin/', views.doLogin, name="doLogin"),
@@ -26,6 +26,7 @@ urlpatterns = [
 	 name='password_reset_confirm'),
     path('reinitialisation/complet/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
    
+    path('set_language/', set_language, name='set_language'),
   
 
     path('delete_excessive_absences/', HodViews.delete_students_with_excessive_absences, name='delete_students_with_excessive_absences'),

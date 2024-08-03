@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Management site{% endblock %}</title>
+
+    <!-- Include Bootstrap CSS only if not on the homepage -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static "fontawesome-free/css/all.min.css" %}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="{% static 'tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{% static "icheck-bootstrap/icheck-bootstrap.min.css" %}">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="{% static "jqvmap/jqvmap.min.css" %}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css'  %}">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static "overlayScrollbars/css/OverlayScrollbars.min.css" %}">
+    
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{% static "daterangepicker/daterangepicker.css" %}">
+    <!-- summernote -->
+    <link rel="stylesheet" href="{% static "summernote/summernote-bs4.css" %}">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  
+    <!-- Favicons -->
+    <link href="{% static 'media/logoCMCF.png' %}" rel="icon">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+    
+    <!-- Template Main CSS File -->
+    <link href="{% static 'media/css/style.css' %}" rel="stylesheet">
+    <style>
+        body, html {
+          height: 100%;
+          margin: 0;
+          overflow-x: hidden; 
+          /* Prevent horizontal scroll */
+        }
+        
+        .content-wrapper {
+          width: 100%;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+       
+        }
+      
+        .login-box {
+          background-color:#e1e6ea;
+          max-width: 100%; /* Prevent overflow */
+          margin: 0 auto; /* Center the box */
+          position: relative; /* For floating effect */
+          top: 50px; /* Adjust as needed */
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow */
+          border-radius: 8px; /* Optional: Add rounded corners */
+        }
+      
+        .login-card-body {
+            background-color:#e1e6ea;
+          /* Ensure the content aligns properly */
+          padding: 20px;
+           /* Adjust padding as needed */
+        }
+      
+        footer {
+          text-align: center;
+          padding: 20px;
+          background-color: #f1f1f1;
+          margin-top: auto; /* Push footer to the bottom */
+        }
+      
+        .footer-fixed {
+          position: relative;
+          width: 100%;
+        }
+        
+      </style>
+    {% block additional_head %}{% endblock %}
+</head>
+<body>
+    {% block navbar %}
+        <!-- ======= Header ======= -->
+        <header id="header" class="fixed-top d-flex align-items-center">
+            <div class="container d-flex align-items-center">
+            <div class="logo me-auto">
+                <h1>
+                <a href="#"><img src="{% static 'media/logoCMCF.png' %}" alt="" class="img-fluid"></a>
+                <a href="#">C.M.C.F</a>
+                </h1>
+            </div>
+            <nav id="navbar" class="navbar order-last order-lg-0">
+                <ul>
+                <li><a class="nav-link scrollto active" href="{% url 'homepage' %}">Accueil</a></li>
+                {% if request.path == '/' %}
+                <li><a class="nav-link scrollto" href="#about">À propos</a></li>
+                <li><a class="nav-link scrollto" href="#services">Services</a></li>
+                <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+                {% endif %}
+                <li><a class="nav-link scrollto" href="{% url 'login' %}">Connexion</a></li>
+                <li><a class="nav-link scrollto" href="{% url 'enroll_student' %}">Inscription</a></li>
+                </ul>
+            </nav><!-- .navbar -->
+            <div class="header-social-links d-flex align-items-center">
+                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+            </div>
+        </header><!-- End Header -->
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+  
+    <footer class="footer-fixed">
+        <strong>Copyright &copy; {% now "Y" %}, <a target="blank" href="https://shorturl.at/QStUE">Center Moroccan Korean Training Technology Information And Communication In Education</a>.</strong> 
+        <br>
+        <div style="text-align:center;">
+          Developed by Aboulakjam Manal, Bouguidou Omar (2024 Emsi)
+        </div>
+      </footer>
+
+    <!-- Vendor JS Files -->
+    <script src="{% static 'media/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+    <script src="{% static 'media/vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'media/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'media/vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'media/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'media/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'media/vendor/php-email-form/validate.js' %}"></script>
+    <script src="{% static 'media/js/main.js' %}"></script>    
+    <!-- jQuery -->
+    <script src="{% static "jquery/jquery.min.js"  %}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{% static "jquery-ui/jquery-ui.min.js"  %}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+    $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static "bootstrap/js/bootstrap.bundle.min.js"  %}"></script>
+    <!-- ChartJS -->
+    <script src="{% static "chart.js/Chart.min.js"  %}"></script>
+    <!-- Sparkline -->
+    <script src="{% static "sparklines/sparkline.js"  %}"></script>
+    <!-- JQVMap -->
+    <script src="{% static "jqvmap/jquery.vmap.min.js"  %}"></script>
+    <script src="{% static "jqvmap/maps/jquery.vmap.usa.js"  %}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{% static "jquery-knob/jquery.knob.min.js"  %}"></script>
+    <!-- daterangepicker -->
+    <script src="{% static "moment/moment.min.js"  %}"></script>
+    <script src="{% static "daterangepicker/daterangepicker.js"  %}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{% static "tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"  %}"></script>
+    <!-- Summernote -->
+    <script src="{% static "summernote/summernote-bs4.min.js"  %}"></script>
+    <!-- overlayScrollbars -->
+    <script src="{% static "overlayScrollbars/js/jquery.overlayScrollbars.min.js"  %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static 'dist/js/adminlte.js'  %}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{% static 'dist/js/pages/dashboard.js'  %}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static 'dist/js/demo.js'  %}"></script>
+
+</body>
+</html>

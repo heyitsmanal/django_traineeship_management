@@ -10,7 +10,6 @@ import string
 from django.core.mail import send_mail
 from django.conf import settings
 
-from student_management_system.settings import LANGUAGES
 from .forms import  CustomPasswordResetForm, EnrollStudentForm
 from .models import BlacklistedStudent, Courses, CustomUser, Students
 from .EmailBackEnd import EmailBackEnd  # Assuming you have a custom backend

@@ -1,14 +1,12 @@
-{% extends 'base.html' %}
-{% load static %} 
-
-
+{% extends 'base_.html' %}
+{% load static %}
 
 {% block content %}
 
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-<title>Homepage</title>
+{% block title %}login{% endblock %}
 <meta name="description" content="Explore our professional training center in Salé, offering cutting-edge courses in Information and Communication Technology (ICT). Our expert instructors and modern teaching methods ensure you’re prepared for the future of technology.">
 <meta name="keywords" content="training, ICT, technology, courses, Salé, professional development">
 
@@ -29,109 +27,69 @@
 <!-- Template Main CSS File -->
 <link href="{% static 'media/css/style.css' %}" rel="stylesheet">
 
-{% block navbar %}
-  <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top d-flex align-items-center ">
-    <div class="container d-flex align-items-center">
-      <div class="logo me-auto">
-        <h1>
-          <a href="{% url 'homepage' %}"><img src="{% static 'media/logoCMCF.png' %}" alt="" class="img-fluid"></a>
-          <a href="{% url 'homepage' %}">C.M.C.F</a>
-        </h1>
+
+
+<section id="hero">
+  <div class="container ">
+    <div class="row">
+      <div class="col-lg-6 d-flex align-items-center">
+        <div class="login-box shadow p-4 mb-5 rounded">
+          <div class="login-logo">
+            <p class="text-center"><strong>LOGIN</strong></p>
+          </div>
+          <!-- Removed .card div -->
+          <div class="login-card-body">
+            <form action="{% url 'doLogin' %}" method="POST">
+              {% csrf_token %}
+              <div class="input-group mb-3 mt-4">
+                <input type="email" class="form-control" placeholder="Email" name="email">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-5 mt-4">
+                <input type="password" class="form-control" placeholder="Password" name="password">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-lock"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              </div>
+              <div class="col-12 text-center mt-3">
+                Forgot your password? &nbsp; <a href="{% url 'custom_password_reset' %}">Reset Password</a>
+              </div>
+              {% if messages %}
+              <div class="col-12">
+                {% for message in messages %}
+                  {% if message.tags == "error" %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                      {{ message }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </form>
+          </div>
+        </div>
       </div>
-      <nav id="navbar" class="navbar order-last order-lg-0">
-        <ul>
-          <li><a class="nav-link scrollto active" href="{% url 'homepage' %}">Accueil</a></li>
-          <li><a class="nav-link scrollto" href="{% url 'login' %}">Connexion</a></li>
-          <li><a class="nav-link scrollto" href="{% url 'enroll_student' %}">Inscription</a></li>
-        </ul>
-      </nav><!-- .navbar -->
-      <div class="header-social-links d-flex align-items-center">
-        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+      <div class="col-lg-6 d-flex align-items-center justify-content-center">
+        <img src="{% static 'media/login_pic.png' %}" class="img-fluid" alt="" style="width:1000px">
       </div>
     </div>
-  </header><!-- End Header -->
-{% endblock %}
-
-
-
-
-
-    <body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-	
-<div class="image">
-            <img src="{% static 'media/logoCMCF.png' %}" class="img-circle elevation-2" alt="piet Image">
-          </div>
-    <a href="{% url 'login' %}"><b> CMCF</b><br>  Login </a>
   </div>
-  <!-- /.login-logo -->
-  <div class="card">
-    <div class="card-body login-card-body">
-      <p class="login-box-msg mt-3">Sign in</p>
-
-      <form action="{% url 'doLogin' %}" method="POST" >
-      {% csrf_token %}
-        <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email" name="email">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-2 ">
-          <input type="password" class="form-control" placeholder="Password" name="password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-
-          <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-          </div>
-
-          <div class="col-12 text-center mt-2">
-              Forgot your password? &nbsp; <a href="{% url 'custom_password_reset' %}">Reset Password</a>
-          </div>
-
-          {% comment %} Display Messages {% endcomment %}
-          {% if messages %}
-          <div class="col-12">
-            {% for message in messages %}
-              {% if message.tags == "error" %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                  {{ message }}
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-          {% endif %}
-
-          <!-- /.col -->
-        </div>
-      </form>
+</section><!-- End Hero -->
 
 
-  </div>
-</div>
-<br><br>
-<footer>
-  <strong>Copyright &copy; {% now "Y" %}, <a target="blank" href="https://shorturl.at/QStUE">Center Moroccan Korean Training Technology Information And Communication In Education</a>.</strong> 
-  <br>
-  <div style="text-align:center;">
-    Developed by Aboulakjam manal , Bouguidou Omar (2024 Emsi)
-  </div>
-</footer>
-<!-- /.login-box -->
+
+
 
 {% endblock %}
