@@ -1,0 +1,162 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+    Manage Groups
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'media/css/custom_form_styles.css' %}">
+{% endblock style %}
+
+{% if messages %}
+<div class="form-group">
+    <div class="col-12">
+        {% for message in messages %}
+        {% if message.tags == "error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% elif message.tags == "success" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<section class="content">
+    <div class="container-fluid">
+        <a class="btn btn-primary ml-3" href="{% url 'add_group' %}" role="button">+ Add group</a> <br/>&nbsp;
+
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary">
+                        <h3 class="card-title text-white">Group Students</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool collapse-toggle" data-toggle="collapse" data-target="#collapseCard"><i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body collapse" id="collapseCard">
+                        <div class="container mt-5">
+                            <h1>Manage Groups</h1>
+                            <form method="post" id="groupStudentsForm">
+                                {% csrf_token %}
+
+                                {% if messages %}
+                                    <div class="form-group">
+                                        <div class="col-12">
+                                            {% for message in messages %}
+                                            {% if message.tags == "error" %}
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                                    {{ message }}
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                            {% elif message.tags == "success" %}
+                                                <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                                    {{ message }}
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+
+                                
+                                <div class="form-group">
+                                    <label for="{{ form.max_salle_disponible.id_for_label }}">Maximum salle disponible:</label>
+                                    {{ form.max_salle_disponible }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.max_groups_morning.id_for_label }}">Maximum Morning Groups:</label>
+                                    {{ form.max_groups_morning }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.max_groups_evening.id_for_label }}">Maximum Evening Groups:</label>
+                                    {{ form.max_groups_evening }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.avoid_days.id_for_label }}">Avoid days:</label>
+                                    {{ form.avoid_days }}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.create_days.id_for_label }}">Create days:</label>
+                                    {{ form.create_days }}
+                                </div>
+
+                                <button type="submit" class="btn btn-primary" id="groupStudentsButton">Group Students</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" id="groupListCard">
+                    <div class="card-header bg-primary">
+                        <h3 class="card-title text-white">Groups</h3>
+                    </div>
+                    <div class="card-body table-responsive p-0" id="groupListCardBody">
+                        {% include 'hod_template/group_list_partial.html' with course_groups=course_groups %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block custom_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#groupStudentsForm').on('submit', function(event) {
+            event.preventDefault();
+            
+            $.ajax({
+                url: '{% url "manage_groups" %}',
+                type: 'POST',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.group_list_html) {
+                        $('#groupListCardBody').html(response.group_list_html);
+                    } else {
+                        console.error('No group list HTML returned.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX request failed.');
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock custom_js %}
+
+{% endblock main_content %}

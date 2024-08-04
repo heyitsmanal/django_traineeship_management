@@ -1,0 +1,20 @@
+{% extends 'student_template/base_template.html' %}
+
+{% block page_title %}
+    Preview Certificate
+{% endblock page_title %}
+
+{% block main_content %}
+<div class="container mt-5">
+    
+    {% if certificate_preview %}
+        <h1>Certificate Preview</h1>
+        <iframe src="{% url 'preview_certificate' certificate_id %}" width="100%" height="800px"></iframe>
+        <br><br>
+        <a href="{% url 'download_certificate' student.id %}" class="btn btn-success">Download Certificate</a>
+    {% else %}
+        <p>No certificate available till the end of your courses.</p>
+    {% endif %}
+</div>
+{% endblock main_content %}
+

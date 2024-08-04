@@ -1,0 +1,63 @@
+{% extends 'student_template/base_template.html' %}
+
+{% block page_title %}
+    Student Attendance
+{% endblock page_title %}
+
+{% block main_content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {% if student %}
+                    {% if student.courses.exists %}
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h3 class="card-title text-white">Student Attendance for {{ student.courses.first.course_name }}</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                            {% if attendance_data %}
+                                                {% for attendance_record in attendance_data %}
+                                                    <tr>
+                                                        <td>{{ attendance_record.attendance_id.attendance_date }}</td>
+                                                        <td>{{ attendance_record.status|yesno:"Absent,Present" }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>    
+                                                    <td colspan="2">No attendance records found.</td>
+                                                </tr>
+                                            {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            You are not enrolled in any courses.
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        Please wait until you're assigned a group.
+                    </div>
+                {% endif %}
+            </div>
+            <!-- /.col-md-12 -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+{% endblock main_content %}

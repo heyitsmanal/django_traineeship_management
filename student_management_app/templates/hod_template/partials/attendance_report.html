@@ -1,0 +1,50 @@
+
+<head>
+    <style>
+        .status-present {
+            color: green;
+        }
+        .status-absent {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Attendance Status</th>
+                <th>Attendance Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                {% for report in attendance_reports %}
+                    {% if report.student_id.id == student.id %}
+                        <tr>
+                            <td>
+                                {% if student.admin %}
+                                    {{ student.admin.first_name }} {{ student.admin.last_name }}
+                                {% else %}
+                                    Name not available
+                                {% endif %}
+                            </td>
+                            <td class="{% if report.status %}status-absent{% else %}status-present{% endif %}">
+                                {{ report.status|yesno:"Absent,Present" }}
+                            </td>
+                            <td>
+                                {{ report.attendance_id.attendance_date }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% empty %}
+                <tr>
+                    <td colspan="3">No students or attendance records found for this group.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

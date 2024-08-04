@@ -1,0 +1,95 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+    Timetable for {{ selected_group.id }}
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        margin-top: 20px;
+        font-family: 'Roboto', sans-serif;
+        background-color: #f8f9fa;
+    }
+    .table-bordered thead th {
+        border-bottom-width: 2px;
+        color: #343a40;
+    }
+    .table-bordered td, .table-bordered th {
+        border: 1px transparent;
+    }
+    .table td, .table th {
+        padding: .75rem;
+        vertical-align: middle;
+    }
+    .form-control {
+        margin-bottom: 10px;
+    }
+</style>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="container">
+               
+
+                <div class="table-responsive">
+                    <form method="post" action="{% url 'group_timetable' group_id=selected_group.id %}">
+                        {% csrf_token %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Course</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in timetable %}
+                                    <tr>
+                                        <td>{{ schedule.day_of_week }}</td>
+                                        <td>{{ schedule.course }}</td>
+                                        <td>
+                                            <input type="time" name="start_time_{{ schedule.id }}" value="{{ schedule.start_time|date:'H:i' }}" class="form-control">
+                                        </td>
+                                        <td>
+                                            <input type="time" name="end_time_{{ schedule.id }}" value="{{ schedule.end_time|date:'H:i' }}" class="form-control">
+                                        </td>
+                                        <td>
+                                            <select name="category_{{ schedule.id }}" class="form-control">
+                                                <option value="Morning" {% if schedule.category == 'Morning' %}selected{% endif %}>Morning</option>
+                                                <option value="Evening" {% if schedule.category == 'Evening' %}selected{% endif %}>Evening</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'delete_schedule' schedule_id=schedule.id %}" class="btn btn-danger">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6">No timetable entries available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <button type="submit" class="btn btn-primary">Update Timetable</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+{% endblock main_content %}
+
+{% block custom_js %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% endblock custom_js %}

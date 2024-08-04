@@ -1,0 +1,250 @@
+{% extends 'base_.html' %}
+{% load static %}
+{% block content %}
+
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<title>Homepage</title>
+<meta name="description" content="Explore our professional training center in Salé, offering cutting-edge courses in Information and Communication Technology (ICT). Our expert instructors and modern teaching methods ensure you’re prepared for the future of technology.">
+<meta name="keywords" content="training, ICT, technology, courses, Salé, professional development">
+
+<!-- Favicons -->
+<link href="{% static 'media/logoCMCF.png' %}" rel="icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="{% static 'media/css/style.css' %}" rel="stylesheet">
+
+
+
+<!-- ======= Hero Section ======= -->
+<section id="hero">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 pt-5 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="fade-up">
+        <div>
+          <h1>Centre de formation professionnelle</h1>
+          <p>Nous sommes un centre de formation professionnelle situé à Salé. Nous offrons des cours de formation en technologie de l’information et de la communication pour l’éducation (TICE). Notre mission est de former et de préparer les étudiants à s’adapter aux nouvelles technologies de l’avenir.</p>
+          <a href="{% url 'enroll_student' %}" class="btn-get-started scrollto">Inscription</a>
+        </div>
+      </div>
+      <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="fade-left">
+        <img src="{% static 'media/features-1.png' %}" class="img-fluid" alt="" style="width:1000px">
+      </div>
+    </div>
+  </div>
+</section><!-- End Hero -->
+
+<main id="main">
+  <!-- ======= About Section ======= -->
+  <section id="about" class="about">
+    <div class="container mb-5">
+      <div class="row">
+        <div class="col-lg-6" data-aos="zoom-in">
+          <img src="{% static 'media/img/about.jpg' %}" class="img-fluid " alt="" style="border-radius: 10px;">
+        </div>
+        <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-left">
+          <div class="content pt-4 pt-lg-0">
+            <h3 class=" ml-4" >À propos de nous</h3>
+            <p class="fst-italic ml-4 ">
+              Nous avons des instructeurs qualifiés et expérimentés qui vous guideront tout au long du processus d’apprentissage. Nous utilisons des méthodes d’enseignement modernes et interactives pour assurer une meilleure compréhension et une expérience d’apprentissage agréable.<br>
+              Chez Centre Maroco-Coréen de Formation en TICE, vous apprendrez à créer, à concevoir et à analyser diverses technologies de l’information et de la communication. Nos programmes de formation sont conçus pour les étudiants qui veulent améliorer leurs compétences en TICE, ainsi que pour ceux qui cherchent à se réorienter.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- End About Section -->
+
+  <!-- ======= Services Section ======= -->
+  <section id="services" class="services section-bg">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Courses</h2>
+        <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
+      </div>
+      <div class="row">
+        <!-- Service items here -->
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up">
+            <div class="icon-box text-center">
+                <img src="{% static 'media/hero-img.png' %}" class="img-fluid mb-3" alt="Web Development Icon" style="height:120px; width:120px;">
+                <h4><a href="#">Web Development</a></h4>
+                <p>Our team builds responsive and efficient websites tailored to your business needs, from simple landing pages to complex web applications.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+            <div class="icon-box text-center">
+                <img src="{% static 'media/features-4.png' %}" class="img-fluid mb-3" alt="Graphic Design Icon" style="height:120px; width:120px;">
+                <h4><a href="#">Graphic Design</a></h4>
+                <p>We offer creative graphic design solutions, including branding, logo design, and marketing materials that effectively communicate your brand's message.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+            <div class="icon-box text-center">
+                <img src="{% static 'media/features-5.png' %}" class="img-fluid mb-3" alt="Digital Marketing Icon" style="height:120px; width:200px;">
+                <h4><a href="#">Digital Marketing</a></h4>
+                <p>Enhance your online presence with our comprehensive digital marketing services, including SEO, PPC, and social media marketing.</p>
+            </div>
+        </div>
+    </div>
+    
+    
+    </div>
+  </section><!-- End Services Section -->
+
+  <!-- ======= Testimonials Section ======= -->
+  <section id="testimonials" class="testimonials">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Student Testimonials</h2>
+        <p>We are dedicated to empowering our students through quality education and training. Here are some testimonials from our students and trainees who have experienced personal and professional growth through our programs. Their success stories reflect our commitment to providing exceptional learning experiences.</p>
+    </div>
+      <div class="testimonials-slider swiper">
+        <div class="swiper-wrapper">
+          <!-- Testimonial items here -->
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                The training at C.M.C.F was truly transformative. The instructors were highly knowledgeable, and the practical sessions were incredibly useful. I feel much more confident in my tech skills now.
+                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+              <img src="{% static 'media/img/testimonials/testimonials-1.jpg' %}" class="testimonial-img" alt="">
+              <h3>james rick</h3>
+              <h4>student</h4>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                I had an amazing experience at C.M.C.F. The training was well-structured, and the practical exercises really helped me understand the concepts. The instructors were always available for support and guidance.                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+              <img src="{% static 'media/img/testimonials/testimonials-2.jpg' %}" class="testimonial-img" alt="">
+              <h3>samantha lorez</h3>
+              <h4>student</h4>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="testimonial-item">
+              <p>
+                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                C.M.C.F provided an exceptional learning experience with up-to-date course materials and hands-on projects. The support from the instructors was outstanding, and I’ve gained practical skills that will benefit my career.                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+              </p>
+              <img src="{% static 'media/img/testimonials/testimonials-3.jpg' %}" class="testimonial-img" alt="">
+              <h3>mark santon</h3>
+              <h4>student</h4>
+            </div>
+          </div>
+          <!-- Add more testimonials as needed -->
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section><!-- End Testimonials Section -->
+
+
+
+  <section style="display: flex; justify-content: center; align-items: center; width: 80%; margin-left: 90px;">
+    <div style="flex: 1; text-align: center; padding: 15px;">
+        <img src="{% static 'media/openHours.png' %}" style="max-width: 100%; height: auto;" alt="Open Hours Image">
+    </div>
+    <div style="flex: 1; text-align: center; padding: 15px;">
+        <img src="{% static 'media/building.png' %}" style="max-width: 100%; height: auto; margin-left: 20px;" alt="Building Image">
+    </div>
+  </section>
+  
+
+
+
+  
+  <!-- ======= Contact Section ======= -->
+  <section id="contact" class="contact">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Contactez-nous</h2>
+        <p>You can contact us via the form below or through our contact details.</p>
+      </div>
+      <div class="row">
+        <div class="col-lg-6">
+          <form action="" method="post" role="form" class="php-email-form">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col form-group">
+                <input type="text" name="name" class="form-control" id="name" placeholder="Votre nom" required>
+              </div>
+              <div class="col form-group">
+                <input type="email" class="form-control" name="email" id="email" placeholder="Votre email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" name="subject" id="subject" placeholder="Sujet" required>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" name="message" rows="5" placeholder="Votre message" required></textarea>
+            </div>
+            <div class="text-center">
+              <button type="submit">Envoyer le message</button>
+            </div>
+          </form>
+        </div>
+        <div class="col-lg-6">
+          <div class="info">
+            <div class="address">
+              <i class="bi bi-geo-alt"></i>
+              <h4>Adresse:</h4>
+              <p>123 Rue Exemples, Salé, Maroc</p>
+            </div>
+            <div class="email">
+              <i class="bi bi-envelope"></i>
+              <h4>Email:</h4>
+              <p>contact@cmcf.ma</p>
+            </div>
+            <div class="phone">
+              <i class="bi bi-phone"></i>
+              <h4>Téléphone:</h4>
+              <p>+212 123 456 789</p>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Contact Section -->
+
+</main><!-- End #main -->
+
+<!-- Vendor JS Files -->
+{% comment %} <script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script> {% endcomment %}
+<script src="{% static 'vendor/aos/aos.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+<script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+<!-- Template Main JS File -->
+<script src="{% static 'media/js/main.js' %}"></script>
+<script>
+  var swiper = new Swiper('.swiper-container', {
+    loop: false, // Or true if you add more slides
+    slidesPerView: 1,
+    slidesPerGroup: 1
+  });
+  
+</script>
+
+</body>
+</html>
+
+
+{% endblock content %}

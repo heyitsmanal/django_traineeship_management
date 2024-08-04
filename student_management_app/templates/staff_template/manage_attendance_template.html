@@ -1,0 +1,160 @@
+{% extends 'staff_template/base_template.html' %}
+
+{% block page_title %}
+    Manage Attendance
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% comment %} Display Messages {% endcomment %}
+{% if messages %}
+<div class="form-group">
+    <div class="col-12">
+        {% for message in messages %}
+        {% if message.tags == "error" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% elif message.tags == "success" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<a class="btn btn-primary ml-3" href="{% url 'staff_take_attendance' %}" role="button">+ Take Attendance</a> <br/>&nbsp; 
+
+<div class="container mt-4">
+    <h1>Manage Attendance</h1>
+
+    <!-- Display Groups Based on Category -->
+    <div class="mt-4">
+        <h2>Morning Groups</h2>
+        <div id="morningGroups" class="mt-2">
+            {% for group in groups %}
+                {% if group.category == 'Morning' %}
+                    <div class="group-row" data-group-id="{{ group.id }}">
+                        {{ group }} <!-- Display group information -->
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <h2 class="mt-4">Evening Groups</h2>
+        <div id="eveningGroups" class="mt-2">
+            {% for group in groups %}
+                {% if group.category == 'Evening' %}
+                    <div class="group-row" data-group-id="{{ group.id }}">
+                        {{ group }} <!-- Display group information -->
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="attendancesTable" class="mt-4"></div>
+    <div id="attendanceDetails" class="mt-4"></div>
+</div>
+
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.group-row').click(function() {
+                // Remove selected class from all rows
+                $('.group-row').removeClass('selected');
+        
+                // Add selected class to the clicked row
+                $(this).addClass('selected');
+        
+                var group_id = $(this).data('group-id');
+                loadAttendanceDetails(group_id);
+            });
+        
+            $('#save-attendance-btn').click(function() {
+                var group_id = $('.group-row.selected').data('group-id');
+                if (group_id) {
+                    saveAttendance(group_id);
+                } else {
+                    console.error('No group selected');
+                    // Handle error condition
+                }
+            });
+        
+            function loadAttendanceDetails(group_id) {
+                $.ajax({
+                    url: '/get_students/' + group_id + '/',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        // Clear previous data
+                        $('#attendanceDetails').empty();
+        
+                        // Construct table
+                        var table = $('<table class="table">');
+                        var thead = $('<thead class="thead bg-primary">').appendTo(table);
+                        var tbody = $('<tbody>').appendTo(table);
+        
+                        // Table headers
+                        var headers = '<tr><th>ID</th><th>Name</th><th>Absent</th></tr>';
+                        thead.append(headers);
+        
+                        // Append new data
+                        for (var i = 0; i < data.length; i++) {
+                            var student = data[i];
+                            var row = '<tr><td>' + student.id + '</td><td>' + student.name + '</td><td><input type="checkbox" name="absent[]" value="' + student.id + '"></td></tr>';
+                            tbody.append(row);
+                        }
+        
+                        // Append table to attendanceDetails div
+                        $('#attendanceDetails').append(table);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching attendance details:', error);
+                    }
+                });
+            }
+        
+            function saveAttendance(group_id) {
+                var student_ids = [];
+                $('input[name="absent[]"]:checked').each(function() {
+                    student_ids.push($(this).val());
+                });
+        
+                var attendance_date = new Date().toISOString().slice(0, 10); // Example: Current date
+        
+                $.ajax({
+                    url: '/save_attendance_data/',
+                    type: 'POST',
+                    data: {
+                        group_id: group_id,
+                        student_ids: student_ids,
+                        attendance_date: attendance_date,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log('Attendance saved successfully');
+                        alert('Attendance saved successfully'); // Show success message
+                        // Optionally update UI or show message
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error saving attendance:', xhr.responseText);
+                        alert('Failed to save attendance: ' + xhr.responseText); // Show error message
+                        // Handle error if needed
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
+{% endblock main_content %}

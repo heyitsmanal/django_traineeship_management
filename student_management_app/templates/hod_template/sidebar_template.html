@@ -1,0 +1,153 @@
+{% load static %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="{% url 'admin_home' %}" class="brand-link">
+        <img src="{% static 'media/logoCMCF.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+            style="opacity: .8">
+        <span class="brand-text font-weight-light"> C.M.C.F </span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'media/admin.jpg' %}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="{% url 'admin_profile' %}" class="d-block">{{ user.username|upper }}</a>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+
+            <li class="nav-item">
+              {% url 'admin_home' as admin_home %}
+              <a href="{{ admin_home }}" class="nav-link {% if request.path == admin_home %} active {% endif %}">
+                <i class="nav-icon fas fa-home"></i>
+                <p>
+                  Home
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              {% url 'manage_staff' as manage_staff %}
+              {% url 'edit_staff' staff_id=id as edit_staff %}
+              <a href="{{ manage_staff }}" class="nav-link {% if request.path == manage_staff %} active {% endif %} {% if request.path == edit_staff %} active {% endif %}">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>
+                  Manage Staff
+                </p>
+              </a>
+            </li>
+            
+          
+
+            <li class="nav-item">
+              {% url 'manage_student' as manage_student %}
+              {% url 'edit_student' student_id=id as edit_student %}
+              <a href="{{ manage_student }}" class="nav-link {% if request.path == manage_student %} active {% endif %} {% if request.path == edit_student %} active {% endif %}">
+                <i class="nav-icon fas fa-user-graduate"></i>
+                <p>
+                  Manage Student
+                </p>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              {% url 'manage_course' as manage_course %}
+              {% url 'edit_course' course_id=id as edit_course %}
+              <a href="{{ manage_course }}" class="nav-link {% if request.path == manage_course %} active {% endif %} {% if request.path == edit_course %} active {% endif %}">
+                <i class="nav-icon fas fa-chalkboard"></i>
+                <p>
+                  Manage Course
+                </p>
+              </a>
+            </li>
+
+
+
+            <li class="nav-item">
+              {% url 'admin_view_attendance' as admin_view_attendance %}
+              <a href="{{ admin_view_attendance }}" class="nav-link {% if request.path == admin_view_attendance %} active {% endif %}">
+                <i class="nav-icon fas fa-clipboard-check"></i>
+                <p>
+                  view Attendance
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              {% url 'manage_groups' as manage_groups %}
+              <a href="{{ manage_groups }}" class="nav-link {% if request.path == manage_groups %} active {% endif %}">
+                <i class="nav-icon fas fa-cubes"></i>
+                <p>
+                  manage groups
+                </p>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              {% url 'manage_student_groups' as manage_student_groups %}
+              <a href="{{ manage_student_groups }}" class="nav-link {% if request.path == manage_student_groups %} active {% endif %}">
+                <i class="nav-icon fas fa-project-diagram"></i>
+                <p>
+                  manage student_groups
+                </p>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              {% url 'manage_staff_groups' as manage_staff_groups %}
+              <a href="{{ manage_staff_groups }}" class="nav-link {% if request.path == manage_staff_groups %} active {% endif %}">
+                <i class="nav-icon fas fa-code-branch"></i>
+                <p>
+                  manage staff_groups
+                </p>
+              </a>
+            </li>
+
+            
+
+            <li class="nav-item">
+              {% url 'manage_timetable' as manage_timetable %}
+              <a href="{{ manage_timetable }}" class="nav-link {% if request.path == manage_timetable %} active {% endif %}">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  manage timetables
+                </p>
+              </a>
+            </li>
+
+
+
+            <li class="nav-item">
+              {% url 'print_certificate_template' as print_certificate_template %}
+              <a href="{{ print_certificate_template }}" class="nav-link {% if request.path == print_certificate_template %} active {% endif %}">
+                <i class="nav-icon fas fa-envelope-open-text"></i>
+                <p>
+                  print certificates
+                </p>
+              </a>
+            </li>
+
+            
+            
+
+            
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>

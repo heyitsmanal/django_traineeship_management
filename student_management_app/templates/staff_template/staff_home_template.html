@@ -1,0 +1,102 @@
+{% extends 'staff_template/base_template.html' %}
+
+{% block page_title %}
+    Staff Home - Schedule
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    .table-bordered thead th {
+        border-bottom-width: 2px;
+        color: #343a40;
+    }
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6;
+    }
+    .table td, .table th {
+        padding: .75rem;
+        vertical-align: middle;
+    }
+    .schedule-section {
+        margin-bottom: 30px;
+    }
+</style>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="container">
+                <div class="schedule-section">
+                    <h4>Morning Groups</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Group</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in morning_groups %}
+                                    <tr>
+                                        <td>{{ schedule.day_of_week }}</td>
+                                        <td>{{ schedule.group.id }}</td>
+                                        <td>{{ schedule.start_time }}</td>
+                                        <td>{{ schedule.end_time }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">No morning schedule available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="schedule-section">
+                    <h4>Evening Groups</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Group</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in evening_groups %}
+                                    <tr>
+                                        <td>{{ schedule.day_of_week }}</td>
+                                        <td>{{ schedule.group.id }}</td>
+                                        <td>{{ schedule.start_time }}</td>
+                                        <td>{{ schedule.end_time }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">No evening schedule available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock main_content %}
+
+{% block custom_js %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% endblock custom_js %}

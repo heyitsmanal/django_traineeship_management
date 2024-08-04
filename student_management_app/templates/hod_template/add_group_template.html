@@ -1,0 +1,88 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+    Add Group
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load custom_tags %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Add Group</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+
+                    <form role="form" method="POST">
+                                {% for message in messages %}
+                                    {% if message.tags == "error" %}
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                            {{ message }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    {% elif message.tags == "success" %}
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                            {{ message }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <!-- Days of the Week -->
+                            <div class="form-group">
+                                <label for="id_days_of_week">Days of the Week</label>
+                                <div class="checkbox-group">
+                                    {% for day in form.days_of_week %}
+                                        <div class="form-check form-check-inline">
+                                            {{ day.tag|add_css_class:"form-check-input" }}
+                                            <label class="form-check-label" for="{{ day.id_for_label }}">
+                                                {{ day.choice_label }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if form.days_of_week.errors %}
+                                    <div class="text-danger">
+                                        {{ form.days_of_week.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                    
+                            <!-- Category -->
+                            <div class="form-group">
+                                <label for="id_category">Category</label>
+                                {{ form.category|add_css_class:"form-control" }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger">
+                                        {{ form.category.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Add Group</button>
+                            <a class="btn btn-secondary" href="{% url 'manage_groups' %}" role="button">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+{% endblock main_content %}

@@ -1,0 +1,95 @@
+{% extends 'base_.html' %}
+{% load static %}
+
+{% block content %}
+
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+{% block title %}login{% endblock %}
+<meta name="description" content="Explore our professional training center in Salé, offering cutting-edge courses in Information and Communication Technology (ICT). Our expert instructors and modern teaching methods ensure you’re prepared for the future of technology.">
+<meta name="keywords" content="training, ICT, technology, courses, Salé, professional development">
+
+<!-- Favicons -->
+<link href="{% static 'media/logoCMCF.png' %}" rel="icon">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="{% static 'media/css/style.css' %}" rel="stylesheet">
+
+
+
+<section id="hero">
+  <div class="container ">
+    <div class="row">
+      <div class="col-lg-6 d-flex align-items-center">
+        <div class="login-box shadow p-4 mb-5 rounded">
+          <div class="login-logo">
+            <p class="text-center"><strong>LOGIN</strong></p>
+          </div>
+          <!-- Removed .card div -->
+          <div class="login-card-body">
+            <form action="{% url 'doLogin' %}" method="POST">
+              {% csrf_token %}
+              <div class="input-group mb-3 mt-4">
+                <input type="email" class="form-control" placeholder="Email" name="email">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-envelope"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="input-group mb-5 mt-4">
+                <input type="password" class="form-control" placeholder="Password" name="password">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <span class="fas fa-lock"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+              </div>
+              <div class="col-12 text-center mt-3">
+                Forgot your password? &nbsp; <a href="{% url 'custom_password_reset' %}">Reset Password</a>
+              </div>
+              {% if messages %}
+              <div class="col-12">
+                {% for message in messages %}
+                  {% if message.tags == "error" %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                      {{ message }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-flex align-items-center justify-content-center">
+        <img src="{% static 'media/login_pic.png' %}" class="img-fluid" alt="" style="width:1000px">
+      </div>
+    </div>
+  </div>
+</section><!-- End Hero -->
+
+
+
+
+
+{% endblock %}

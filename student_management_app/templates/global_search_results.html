@@ -1,0 +1,16 @@
+<form method="get">
+    <div class="form-row align-items-center">
+      <div class="col-md-6 mb-2">
+        <label class="sr-only" for="filter_by">Filter By</label>
+        <input type="text" name="filter_by" id="filter_by" class="form-control bg-success text-white" value="{{ request.GET.filter_by }}">
+      </div>
+      <div class="col-md-6 mb-2">
+        <label class="sr-only" for="q">Search</label>
+        <input type="text" name="q" id="q" class="form-control" value="{{ request.GET.q }}">
+      </div>
+      <div class="col-md-12 mb-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+  </form>
+  

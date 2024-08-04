@@ -1,0 +1,82 @@
+{% load static %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="{% url 'student_home' %}" class="brand-link">
+        <img src="{% static 'media/logoCMCF.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+            style="opacity: .8">
+        <span class="brand-text font-weight-light">C.M.C.F</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'media/studentpic.jpg' %}" class="img-circle elevation-2"  style="height:40px;width:40px;" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="{% url 'student_profile' %}" class="d-block">{{ user.username|upper }}</a>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+            
+            <li class="nav-item">
+              {% url 'student_home' as student_home %}
+              <a href="{{ student_home }}" class="nav-link {% if request.path == student_home %} active {% endif %}">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Home
+                  {% comment %} <span class="right badge badge-danger">New</span> {% endcomment %}
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              {% url 'student_view_attendance' as student_view_attendance %}
+              <a href="{{ student_view_attendance }}" class="nav-link {% if request.path == student_view_attendance %} active {% endif %}">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  view Attendance
+                  {% comment %} <span class="right badge badge-danger">New</span> {% endcomment %}
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{% url 'get_student_notes' %}?course_id=1" class="nav-link">
+                  <i class="nav-icon fas fa-tasks"></i>
+                  <p>See Notes</p>
+              </a>
+          </li>
+
+          {% if project %}
+              <li class="nav-item">
+                <a href="{% url 'preview_certificate' project_id=project.id %}" class="nav-link {% if request.path == '/certificate/preview/' %} active {% endif %}">
+                      <i class="nav-icon fas fa-envelope-open-text"></i>
+                      <p>Preview Certificate</p>
+                  </a>
+              </li>
+          {% else %}
+          <li class="nav-item">
+            <div class="nav-link disabled">
+                <i class="nav-icon fas fa-envelope-open-text"></i>
+                <p>No project available.</p>
+            </div>
+        </li>
+          {% endif %}
+
+
+           
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
