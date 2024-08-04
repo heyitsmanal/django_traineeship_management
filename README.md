@@ -1,5 +1,5 @@
 
-# Django Student Management System
+# formation management
 
 This project is a comprehensive Student Management System developed using Python with the Django framework, designed for educational purposes.
 
