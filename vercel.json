@@ -5,7 +5,6 @@
         "src": "student_management_system/wsgi.py",
         "use": "@vercel/python",
         "config": {
-          "ignorePipVersion": true,
           "maxLambdaSize": "15mb",
           "runtime": "python3.12"
         }
