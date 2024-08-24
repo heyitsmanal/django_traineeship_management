@@ -62,7 +62,18 @@ class EditStudentForm(forms.Form):
   
    
 
+
 class GroupForm(forms.ModelForm):
+    DAYS_OF_WEEK = [
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ]
+
     class Meta:
         model = Group
         fields = ['days_of_week', 'category']
@@ -70,7 +81,15 @@ class GroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         self.fields['days_of_week'].widget = forms.CheckboxSelectMultiple()
-        self.fields['days_of_week'].queryset = Day.objects.all()
+
+        # Check if the Day model has entries, if not, use the predefined list
+        if not Day.objects.exists():
+            self.fields['days_of_week'].choices = self.DAYS_OF_WEEK
+        else:
+            self.fields['days_of_week'].queryset = Day.objects.all()
+
+        # Only apply the class to the surrounding div to avoid duplication in the HTML
+        self.fields['days_of_week'].widget.attrs.update({'class': 'form-check-input'})
 
 
 

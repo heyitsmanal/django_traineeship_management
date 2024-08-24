@@ -86,7 +86,13 @@
                                 <td>{{ student.admin.email }}</td>
                                 <td>{{ student.address }}</td>
                                 <td>{{ student.gender }}</td>
-                                <td> <img src="{{ student.profile_pic }}" style="width: 50px;height:50px;" /> </td>
+                                <td> 
+                                {% if student.profile_pic %}
+                                    <img src="{{ student.profile_pic.url }}" style="width: 50px; height:50px;" alt="Profile Picture" />
+                                {% else %}
+                                    <img src="{% static 'media/noPic.png' %}" style="width: 50px; height:50px;" alt="Default Profile Picture" />
+                                {% endif %}
+                                </td>
                                 <td>{{ student.preferred_category }}</td>
                                 <td>{{ student.grade }}</td>
                                 <td>{{ student.code_PPR }}</td>

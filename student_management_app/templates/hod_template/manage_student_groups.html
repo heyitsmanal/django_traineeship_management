@@ -32,7 +32,7 @@
                                     <td>{{ student.admin.get_full_name }}</td>
                                     <td>
                                         {% if student.group %}
-                                            {{ student.group.day_of_week }} {{ student.group.category }} Group
+                                            group {{ student.group.id }} - {{ student.group.category }} 
                                         {% else %}
                                             Not Assigned
                                         {% endif %}
@@ -46,7 +46,7 @@
                                                     <option value="">Select Group</option>
                                                     {% for group in groups %}
                                                         <option value="{{ group.id }}" {% if student.group and student.group.id == group.id %}selected{% endif %}>
-                                                            {{ group.day_of_week }} {{ group.category }} Group
+                                                            group {{ group.id }} - {{ group.category }} Group
                                                         </option>
                                                     {% endfor %}
                                                 </select>

@@ -21,32 +21,25 @@
                     <!-- form start -->
 
                     <form role="form" method="POST">
-                                {% for message in messages %}
-                                    {% if message.tags == "error" %}
-                                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                            {{ message }}
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                    {% elif message.tags == "success" %}
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                            {{ message }}
-                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
                         {% csrf_token %}
                         <div class="card-body">
+                            <!-- Display Messages -->
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+
                             <!-- Days of the Week -->
                             <div class="form-group">
                                 <label for="id_days_of_week">Days of the Week</label>
                                 <div class="checkbox-group">
                                     {% for day in form.days_of_week %}
                                         <div class="form-check form-check-inline">
-                                            {{ day.tag|add_css_class:"form-check-input" }}
+                                            {{ day.tag}}
                                             <label class="form-check-label" for="{{ day.id_for_label }}">
                                                 {{ day.choice_label }}
                                             </label>

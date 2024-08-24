@@ -905,13 +905,11 @@ def manage_student_groups(request):
     groups = Group.objects.all()
     
     # Assuming Day model is defined and you have instances of days of the week
-    days_of_week = Day.objects.values_list('name', flat=True)  # Adjust 'name' to the field in your Day model
     categories = [choice[0] for choice in Group.CATEGORY_CHOICES]
 
     context = {
         'students': students,
         'groups': groups,
-        'days_of_week': days_of_week,
         'categories': categories,
     }
     return render(request, 'hod_template/manage_student_groups.html', context)

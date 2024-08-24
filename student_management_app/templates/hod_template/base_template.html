@@ -31,22 +31,7 @@
       <h4 style="margin-left: 10px; margin-top: 5px;">Student Management System HOD Login</h4>
       <ul class="navbar-nav ml-auto">
         <!-- Language Switcher -->
-        <li class="nav-item dropdown">
-          <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
-            <i class="fas fa-globe"></i> Language
-          </a>
-          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
-            <form method="post" action="#">
-              {% csrf_token %}
-              <select name="language">
-                  <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-                  <option value="ar" {% if LANGUAGE_CODE == 'ar' %}selected{% endif %}>Arabic</option>
-                  <!-- Add more languages here -->
-              </select>
-              <button type="submit">Change Language</button>
-          </form>
-          </div>
-        </li>
+        
 
         <!-- User Settings and Logout -->
         <li class="nav-item dropdown">
