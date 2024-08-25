@@ -7,115 +7,207 @@
 {% block main_content %}
 
 {% load static %}
+<style>
+    .modal-body {
+        padding: 0;
+    }
+
+    .modal-body .row {
+        display: flex;
+        align-items: flex-start; /* Align items at the start of the row */
+    }
+
+    .modal-body .col-md-4 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        border-right: 1px solid transparent; /* Invisible border */
+    }
+
+    .modal-body .col-md-8 {
+        padding: 15px;
+    }
+
+    .modal-body p {
+        margin: 0; /* Remove margin from paragraphs */
+    }
+</style>
+
 
 <section class="content">
-        <div class="container-fluid">
+    <div class="container-fluid">
 
-            <a class="btn btn-primary" href="{% url 'add_student' %}" role="button">+ Add Student</a> <br/>&nbsp;
-            
-            {% if messages %}
-                                <div class="form-group">
-                                <div class="col-12">
-                                    {% for message in messages %}
-                                    {% if message.tags == "error" %}
-                                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                        {{ message }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        </div>
-                                    {% elif message.tags == "success" %}
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                        {{ message }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        </div>
-                                    {% endif %}
-                                    {% endfor %}
-                                </div>
-                                </div>
-                                {% endif %}
+        <a class="btn btn-primary" href="{% url 'add_student' %}" role="button">+ Add Student</a> <br/>&nbsp;
 
-            <div class="row">
-
-                <div class="col-md-12">
-                    <!-- general form elements -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Student Details</h3>
-
-                            <div class="card-tools">
-                            <div class="input-group input-group-sm" style="width: 150px;">
-                                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                                <div class="input-group-append">
-                                <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-                                </div>
+        {% if messages %}
+            <div class="form-group">
+                <div class="col-12">
+                    {% for message in messages %}
+                        {% if message.tags == "error" %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
+                        {% elif message.tags == "success" %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover text-nowrap">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Student Details</h3>
+                    </div>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover text-nowrap">
                             <thead>
                                 <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Address</th>
-                                <th>Gender</th>
-                                <th>Profile Pic</th>
-                                <th>preferred_category</th>
-                                <th>Grade</th>
-                                <th>Code_PPR</th>
-                                <th>Last Login</th>
-                                <th>Date Joined</th>
-                                <th>Action</th>
+                                    <th>ID</th>
+                                    <th>Profile Pic</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Code PPR</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for student in students %}
                                 <tr>
-                                <td>{{ student.admin.id }}</td>
-                                <td>{{ student.admin.first_name }}</td>
-                                <td>{{ student.admin.last_name }}</td>
-                                <td>{{ student.admin.username }}</td>
-                                <td>{{ student.admin.email }}</td>
-                                <td>{{ student.address }}</td>
-                                <td>{{ student.gender }}</td>
-                                <td> 
-                                {% if student.profile_pic %}
-                                    <img src="{{ student.profile_pic.url }}" style="width: 50px; height:50px;" alt="Profile Picture" />
-                                {% else %}
-                                    <img src="{% static 'media/noPic.png' %}" style="width: 50px; height:50px;" alt="Default Profile Picture" />
-                                {% endif %}
-                                </td>
-                                <td>{{ student.preferred_category }}</td>
-                                <td>{{ student.grade }}</td>
-                                <td>{{ student.code_PPR }}</td>
-                                <td>{{ student.admin.last_login }}</td>
-                                <td>{{ student.admin.date_joined }}</td>
-                                <td>
-                                    <a href="{% url 'edit_student' student.admin.id %}" class="btn btn-success">Edit</a> 
-                                    <a href="{% url 'delete_student' student.admin.id %}" class="btn btn-danger">Delete</a>
-                                </td>
+                                    <td>{{ student.admin.id }}</td>
+                                    <td>
+                                        <img src="{% if student.profile_pic %}{{ student.profile_pic.url }}{% else %}{% static 'media/noPic.png' %}{% endif %}" style="width: 50px; height:50px;" alt="Profile Picture" />
+                                    </td>
+                                    <td>{{ student.admin.first_name }}</td>
+                                    <td>{{ student.admin.last_name }}</td>
+                                    <td>{{ student.code_PPR }}</td>
+                                    <td>
+                                        <a class="btn btn-info" data-toggle="modal" data-target="#studentModal"
+                                                data-id="{{ student.admin.id }}"
+                                                data-firstname="{{ student.admin.first_name }}"
+                                                data-lastname="{{ student.admin.last_name }}"
+                                                data-pic="{% if student.profile_pic %}{{ student.profile_pic.url }}{% else %}{% static 'media/noPic.png' %}{% endif %}"
+                                                data-codeppr="{{ student.code_PPR }}"
+                                                data-gender="{{ student.gender }}"
+                                                data-address="{{ student.address }}"
+                                                data-preferredcategory="{{ student.preferred_category }}"
+                                                data-group="{{ student.group }}"
+                                                data-grade="{{ student.grade }}"
+                                                data-reference="{{ student.reference }}"
+                                                data-createdat="{{ student.created_at }}"
+                                                data-updatedat="{{ student.updated_at }}">
+                                            View Details
+                                        </a>
+                                    
+                                        <a href="{% url 'edit_student' student.admin.id %}" class="btn btn-success">Edit</a> 
+                                        <a href="{% url 'delete_student' student.admin.id %}" class="btn btn-danger">Delete</a>
+                                    </td>
                                 </tr>
                                 {% endfor %}
-                                
                             </tbody>
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                        </div>
-                    <!-- /.card -->
-
+                        </table>
+                    </div>
                 </div>
             </div>
+        </div>
 
-        </div><!-- /.container-fluid -->
-      </section>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- Modal -->
+<div class="modal fade" id="studentModal" tabindex="-1" role="dialog" aria-labelledby="studentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="studentModalLabel">Student Resume</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 d-flex justify-content-center align-items-start">
+                        <img id="modalProfilePic" src="{% static 'media/noPic.png' %}" class="img-fluid rounded-circle" alt="Profile Picture">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>ID:</strong> <span id="modalId"></span></p>
+                                <p><strong>Gender:</strong> <span id="modalGender"></span></p>
+                                <p><strong>Address:</strong> <span id="modalAddress"></span></p>
+                                <p><strong>Preferred Category:</strong> <span id="modalPreferredCategory"></span></p>
+                                <p><strong>Group:</strong> <span id="modalGroup"></span></p>
+                                <p><strong>Grade:</strong> <span id="modalGrade"></span></p>
+                                <p><strong>Code PPR:</strong> <span id="modalCodePPR"></span></p>
+                                <p><strong>Reference:</strong> <span id="modalReference"></span></p>
+                                <p><strong>Created At:</strong> <span id="modalCreatedAt"></span></p>
+                                <p><strong>Updated At:</strong> <span id="modalUpdatedAt"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-  {% endblock main_content %}
+
+
+
+<!-- Modal Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#studentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+
+            // Extract data from attributes
+            var id = button.data('id');
+            var firstname = button.data('firstname');
+            var lastname = button.data('lastname');
+            var pic = button.data('pic');
+            var codeppr = button.data('codeppr');
+            var gender = button.data('gender');
+            var address = button.data('address');
+            var preferredcategory = button.data('preferredcategory');
+            var group = button.data('group');
+            var grade = button.data('grade');
+            var reference = button.data('reference');
+            var createdat = button.data('createdat');
+            var updatedat = button.data('updatedat');
+
+            // Update the modal's content
+            var modal = $(this);
+            modal.find('#modalId').text(id);
+            modal.find('#modalFirstName').text(firstname);
+            modal.find('#modalLastName').text(lastname);
+            modal.find('#modalCodePPR').text(codeppr);
+            modal.find('#modalProfilePic').attr('src', pic);
+            modal.find('#modalGender').text(gender);
+            modal.find('#modalAddress').text(address);
+            modal.find('#modalPreferredCategory').text(preferredcategory);
+            modal.find('#modalGroup').text(group);
+            modal.find('#modalGrade').text(grade);
+            modal.find('#modalReference').text(reference);
+            modal.find('#modalCreatedAt').text(createdat);
+            modal.find('#modalUpdatedAt').text(updatedat);
+        });
+    });
+</script>
+
+{% endblock main_content %}

@@ -87,6 +87,21 @@ class GroupSchedule(models.Model):
 
  
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Group(models.Model):
     CATEGORY_CHOICES = [
         ('Morning', 'Morning'),
@@ -147,6 +162,19 @@ class Group(models.Model):
 def group_created_handler(sender, instance, created, **kwargs):
     if created:
         instance.create_initial_schedule()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

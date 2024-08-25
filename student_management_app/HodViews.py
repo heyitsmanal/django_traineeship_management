@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db import IntegrityError, transaction
+from django.db import transaction, IntegrityError
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from .utils import generate_certificate
@@ -419,10 +419,10 @@ def edit_student(request, student_id):
     form.fields['first_name'].initial = student.admin.first_name
     form.fields['last_name'].initial = student.admin.last_name
     form.fields['address'].initial = student.address
-    form.fields['course'].initial = student.course
     form.fields['gender'].initial = student.gender
     form.fields['grade'].initial = student.grade
     form.fields['code_PPR'].initial = student.code_PPR
+    form.fields['reference'].initial = student.reference
   
 
 
@@ -451,11 +451,12 @@ def edit_student_save(request):
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             address = form.cleaned_data['address']
-            course = form.cleaned_data['course']
+     
             preferred_category = form.cleaned_data['preferred_category']
             gender = form.cleaned_data['gender']
             grade = form.cleaned_data['grade']  
             code_PPR = form.cleaned_data['code_PPR']
+            reference = form.cleaned_data['reference']
             
             # Getting Profile Pic first
             if len(request.FILES) != 0:
@@ -478,11 +479,12 @@ def edit_student_save(request):
                 # Then Update Students Table
                 student = Students.objects.get(admin=student_id)
                 student.address = address
-                student.course = course
+              
                 student.preferred_category = preferred_category
                 student.gender = gender
-                student.grade = grade  # Assigning new field value
-                student.code_PPR = code_PPR  # Assigning new field value
+                student.grade = grade  
+                student.code_PPR = code_PPR 
+                student.reference = reference  
 
                 if profile_pic_url is not None:
                     student.profile_pic = profile_pic_url
@@ -685,94 +687,94 @@ def manage_groups(request):
         all_groups = []
 
         try:
-            total_students = Students.objects.filter(group__isnull=True).count()
-            if total_students == 0:
-                messages.error(request, "No students available for grouping.")
-                return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
+            while True:
+                total_students = Students.objects.filter(group__isnull=True).count()
+                if total_students == 0:
+                    break  # No students left to group, exit the loop
 
-            available_courses = list(Courses.objects.all())
-            if not available_courses:
-                messages.error(request, "No courses available for scheduling.")
-                return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
+                available_courses = list(Courses.objects.all())
+                if not available_courses:
+                    messages.error(request, "No courses available for scheduling.")
+                    return render(request, 'hod_template/manage_groups_template.html', {'form': GroupingForm()})
 
-            random.shuffle(available_courses)
-            course_index = 0
+                random.shuffle(available_courses)
+                course_index = 0
 
-            used_courses = set()
-            group_used_courses = {}
+                used_courses = set()
+                group_used_courses = {}
 
-            for category in categories:
-                all_students = list(Students.objects.filter(group__isnull=True, preferred_category=category))
-                random.shuffle(all_students)
+                for category in categories:
+                    all_students = list(Students.objects.filter(group__isnull=True, preferred_category=category))
+                    random.shuffle(all_students)
 
-                groups = []
-                while all_students and len(groups) < max_salle_disponible:
-                    new_group = []
-                    while len(new_group) < max_group_size and all_students:
-                        new_group.append(all_students.pop(0))
-                    groups.append(new_group)
+                    groups = []
+                    while all_students and len(groups) < max_salle_disponible:
+                        new_group = []
+                        while len(new_group) < max_group_size and all_students:
+                            new_group.append(all_students.pop(0))
+                        groups.append(new_group)
 
-                for group_students in groups[:]:
-                    if len(group_students) < min_group_size:
-                        added = False
-                        for student in group_students:
-                            for larger_group in groups:
-                                if larger_group is not group_students and len(larger_group) < max_group_size:
-                                    larger_group.append(student)
-                                    added = True
-                                    break
-                        if added:
-                            groups.remove(group_students)
+                    for group_students in groups[:]:
+                        if len(group_students) < min_group_size:
+                            added = False
+                            for student in group_students:
+                                for larger_group in groups:
+                                    if larger_group is not group_students and len(larger_group) < max_group_size:
+                                        larger_group.append(student)
+                                        added = True
+                                        break
+                            if added:
+                                groups.remove(group_students)
 
-                for group_students in groups:
-                    if group_students:
-                        new_group = Group.objects.create(category=category)
-                        group_used_courses[new_group.id] = set()
-                        days_assigned = set()
+                    for group_students in groups:
+                        if group_students:
+                            new_group = Group.objects.create(category=category)
+                            group_used_courses[new_group.id] = set()
+                            days_assigned = set()
 
-                        for day_name in create_days:
-                            if course_index >= len(available_courses):
-                                break  # Stop if no more courses are available
+                            for day_name in create_days:
+                                if course_index >= len(available_courses):
+                                    break  # Stop if no more courses are available
 
-                            assigned_course = available_courses[course_index]
+                                assigned_course = available_courses[course_index]
 
-                            if (assigned_course.id in used_courses or
-                                assigned_course.id in group_used_courses[new_group.id]):
-                                continue
+                                if (assigned_course.id in used_courses or
+                                    assigned_course.id in group_used_courses[new_group.id]):
+                                    continue
 
-                            day, _ = Day.objects.get_or_create(name=day_name)
-                            if day in days_assigned:
-                                continue  # Avoid assigning the same day twice
+                                day, _ = Day.objects.get_or_create(name=day_name)
+                                if day in days_assigned:
+                                    continue  # Avoid assigning the same day twice
 
-                            # Schedule the courses for the day with non-overlapping times
-                            times = []
-                            if category == 'Morning':
-                                times = [('08:30', '10:30'), ('10:45', '12:30')]
-                            else:
-                                times = [('13:30', '15:00'), ('15:15', '16:30')]
+                                # Schedule the courses for the day with non-overlapping times
+                                times = []
+                                if category == 'Morning':
+                                    times = [('08:30', '10:30'), ('10:45', '12:30')]
+                                else:
+                                    times = [('13:30', '15:00'), ('15:15', '16:30')]
 
-                            for start_time, end_time in times:
-                                if assigned_course.id not in group_used_courses[new_group.id]:
-                                    new_group.courses.add(assigned_course)
-                                    new_group.days_of_week.add(day)
-                                    new_group.create_initial_schedule()
-                                    days_assigned.add(day)
-                                    group_used_courses[new_group.id].add(assigned_course.id)
-                                    used_courses.add(assigned_course.id)
+                                for start_time, end_time in times:
+                                    if assigned_course.id not in group_used_courses[new_group.id]:
+                                        new_group.courses.add(assigned_course)
+                                        new_group.days_of_week.add(day)
+                                        new_group.create_initial_schedule()
+                                        days_assigned.add(day)
+                                        group_used_courses[new_group.id].add(assigned_course.id)
+                                        used_courses.add(assigned_course.id)
 
-                                    new_group.save()
-                                    course_index += 1
-                                    if course_index >= len(available_courses):
-                                        break  # Stop if no more courses are available
+                                        new_group.save()
+                                        course_index += 1
+                                        if course_index >= len(available_courses):
+                                            break  # Stop if no more courses are available
 
-                        for student in group_students:
-                            student.group = new_group
-                            student.save()
+                            for student in group_students:
+                                student.group = new_group
+                                student.save()
 
-                all_groups.extend(groups)
+                    all_groups.extend(groups)
 
-                if course_index >= len(available_courses):
-                    break  # Stop creating groups if all courses are scheduled
+                    if course_index >= len(available_courses):
+                        break  # Stop creating groups if all courses are scheduled
 
             no_preference_students = list(Students.objects.filter(group__isnull=True, preferred_category__isnull=True))
             random.shuffle(no_preference_students)
@@ -810,11 +812,15 @@ def manage_groups(request):
             print("Not an AJAX request")
 
     groups = Group.objects.all().annotate(students_count=Count('students'))
+    groups_count = Group.objects.all().count()
     context = {
         "course_groups": groups,
+        "groups_count" : groups_count,
         "form": GroupingForm(),
     }
     return render(request, 'hod_template/manage_groups_template.html', context)
+
+
 
 
 

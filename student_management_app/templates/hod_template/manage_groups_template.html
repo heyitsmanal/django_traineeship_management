@@ -51,33 +51,9 @@
                     </div>
                     <div class="card-body collapse" id="collapseCard">
                         <div class="container mt-5">
-                            <h1>Manage Groups</h1>
                             <form method="post" id="groupStudentsForm">
                                 {% csrf_token %}
 
-                                {% if messages %}
-                                    <div class="form-group">
-                                        <div class="col-12">
-                                            {% for message in messages %}
-                                            {% if message.tags == "error" %}
-                                                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                                    {{ message }}
-                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                            {% elif message.tags == "success" %}
-                                                <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
-                                                    {{ message }}
-                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                            {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% endif %}
 
 
                                 
@@ -118,7 +94,7 @@
             <div class="col-md-12">
                 <div class="card" id="groupListCard">
                     <div class="card-header bg-primary">
-                        <h3 class="card-title text-white">Groups</h3>
+                        <h3 class="card-title text-white"> {{groups_count}} Groups</h3>
                     </div>
                     <div class="card-body table-responsive p-0" id="groupListCardBody">
                         {% include 'hod_template/group_list_partial.html' with course_groups=course_groups %}

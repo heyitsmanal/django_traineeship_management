@@ -63,15 +63,15 @@
                             <thead>
                                 <tr>
                                 <th>ID</th>
+                                <th>Profile Pic</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Address</th>
                                 <th>Gender</th>
-                                <th>Profile Pic</th>
                                 <th>Course</th>
-                                <th>Last Login</th>
+                            
                                 <th>Date Joined</th>
                                 <th>Action</th>
                                 </tr>
@@ -80,12 +80,6 @@
                                 {% for staff in staffs %}
                                 <tr>
                                 <td>{{ staff.admin.id }}</td>
-                                <td>{{ staff.admin.first_name }}</td>
-                                <td>{{ staff.admin.last_name }}</td>
-                                <td>{{ staff.admin.username }}</td>
-                                <td>{{ staff.admin.email }}</td>
-                                <td>{{ staff.address }}</td>
-                                <td>{{ staff.gender }}</td>
                                 <td>
                                     {% if staff.profile_pic %}
                                         <img src="{{ staff.profile_pic.url }}" alt="Profile Pic" style="width: 80px;" />
@@ -93,8 +87,14 @@
                                         <img src="{% static 'media/noPic.png' %}" style="width: 50px; height:50px;" alt="Default Profile Picture" />
                                     {% endif %}
                                 </td>
+                                <td>{{ staff.admin.first_name }}</td>
+                                <td>{{ staff.admin.last_name }}</td>
+                                <td>{{ staff.admin.username }}</td>
+                                <td>{{ staff.admin.email }}</td>
+                                <td>{{ staff.address }}</td>
+                                <td>{{ staff.gender }}</td>
                                 <td>{{ staff.course.course_name }}</td>
-                                <td>{{ staff.admin.last_login }}</td>
+                             
                                 <td>{{ staff.admin.date_joined }}</td>
                                 <td>
                                     <a href="{% url 'edit_staff' staff.admin.id %}" class="btn btn-success">Edit</a> 
