@@ -73,6 +73,7 @@ urlpatterns = [
     path('generate_certificate/<int:project_id>/', HodViews.generate_certificate_view, name='generate_certificate'),
     path('print_certificates/', HodViews.print_certificate_template, name='print_certificate_template'),
     path('admin_get_group_students/', HodViews.admin_get_group_students, name='admin_get_group_students'),
+    path('search/', HodViews.search_view, name='search'),
 
     
 

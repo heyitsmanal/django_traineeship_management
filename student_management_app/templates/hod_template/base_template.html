@@ -30,8 +30,10 @@
       </ul>
       <h4 style="margin-left: 10px; margin-top: 5px;">Student Management System HOD Login</h4>
       <ul class="navbar-nav ml-auto">
-        <!-- Language Switcher -->
-        
+
+        <a href="{% url 'admin_home' %}" class="btn btn-secondary">
+          <i class="bi bi-house-door"></i> Home
+        </a>
 
         <!-- User Settings and Logout -->
         <li class="nav-item dropdown">
@@ -49,6 +51,7 @@
             <div class="dropdown-divider"></div>
           </div>
         </li>
+           
       </ul>
     </nav>
     <!-- /.navbar -->
@@ -66,18 +69,18 @@
               <h1 class="m-0 text-dark">
                 {% block page_title %}{% endblock page_title %}
               </h1>
-            </div><!-- /.col -->
-            <div class="col-sm-6 d-flex justify-content-end ">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'admin_home' %}" class="btn btn-secondary">
-                        <i class="bi bi-house-door"></i> Home
-                    </a>
-                </li>
-              </ol>
-            </div><!-- /.col -->
-          </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+            </div>
+
+            <!-- search  -->             
+            <form class="col-sm-6 d-flex justify-content-end" method="get" action="{% url 'search' %}">
+              <input class="form-control mx-3" type="text" name="q" placeholder="Search">
+              <button type="submit" class="btn btn-sm btn-primary p-2 text-white">
+                <i class="fas fa-search mr-2"></i> Search
+              </button>
+            </form>
+            
+          </div>
+        </div>
       </div>
       <!-- /.content-header -->
 

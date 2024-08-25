@@ -21,6 +21,20 @@ from django.db.models.signals import post_save
 from student_management_app.models import BlacklistedStudent, CustomUser, Day, Group, GroupSchedule, Project, Staffs, Courses, Students, Attendance, AttendanceReport, group_created_handler
 from .forms import AddStudentForm, EditStudentForm, EnrollStudentForm, GroupForm , GroupingForm
 
+from django.shortcuts import render
+ # Replace with your actual model
+
+def search_view(request):
+    query = request.GET.get('q', '')
+    # Searching by username, first_name, and last_name
+    results = CustomUser.objects.filter(
+        username__icontains=query
+    ) | CustomUser.objects.filter(
+        first_name__icontains=query
+    ) | CustomUser.objects.filter(
+        last_name__icontains=query
+    )
+    return render(request, 'hod_template/search_results.html', {'results': results})
 
 def admin_home(request):
     all_student_count = Students.objects.all().count()
