@@ -12,8 +12,9 @@
       <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <div class="image">
-            <img src="{% static 'media/studentpic.jpg' %}" class="img-circle elevation-2"  style="height:40px;width:40px;" alt="User Image">
+          <div class="image ml-3 p-1">
+            {% comment %} <img src="{% static 'media/studentpic.jpg' %}" class="img-circle elevation-2"  style="height:40px;width:40px;" alt="User Image"> {% endcomment %}
+            <i class="fas fa-user-graduate img-circle elevation-2" style="color:#D3D3D3;"></i>
           </div>
           <div class="info">
             <a href="{% url 'student_profile' %}" class="d-block">{{ user.username|upper }}</a>

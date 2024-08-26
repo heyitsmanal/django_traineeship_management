@@ -99,6 +99,8 @@ def student_profile_update(request):
         messages.error(request, "Invalid Method!")
         return redirect('student_profile')
     else:
+
+        profile_pic = request.POST.get('profile_pic')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         password = request.POST.get('password')
@@ -113,6 +115,7 @@ def student_profile_update(request):
             customuser.save()
 
             student = Students.objects.get(admin=customuser.id)
+            student.profile_pic = profile_pic
             student.address = address
             student.save()
 

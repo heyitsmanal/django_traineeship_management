@@ -257,6 +257,7 @@ def staff_profile_update(request):
         messages.error(request, "Invalid Method!")
         return redirect('staff_profile')
     else:
+        profile_pic = request.POST.get('profile_pic')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         password = request.POST.get('password')
@@ -271,6 +272,7 @@ def staff_profile_update(request):
             customuser.save()
 
             staff = Staffs.objects.get(admin=customuser.id)
+            staff.profile_pic = profile_pic
             staff.address = address
             staff.save()
 
