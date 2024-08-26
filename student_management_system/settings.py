@@ -1,8 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from django.utils.translation import gettext_lazy as _
 import os
-import django_heroku
-import dj_database_url
+
 
 
 
@@ -143,8 +142,6 @@ STATICFILES_DIRS = [
 ]
 
 
-
-django_heroku.settings(locals())
 
 
 
