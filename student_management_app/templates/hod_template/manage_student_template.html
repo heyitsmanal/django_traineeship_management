@@ -1,7 +1,7 @@
 {% extends 'hod_template/base_template.html' %}
 
 {% block page_title %}
-    Manage Student
+    Manage Students
 {% endblock page_title %}
 
 {% block main_content %}
@@ -80,6 +80,11 @@
                                     <th>Last Name</th>
                                     <th>Code PPR</th>
                                     <th>Actions</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -113,6 +118,10 @@
                                         <a href="{% url 'edit_student' student.admin.id %}" class="btn btn-success">Edit</a> 
                                         <a href="{% url 'delete_student' student.admin.id %}" class="btn btn-danger">Delete</a>
                                     </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

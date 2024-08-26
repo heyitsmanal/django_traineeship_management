@@ -179,6 +179,12 @@ class EnrollStudentForm(forms.Form):
         ('morning', 'Morning'),
         ('evening', 'Evening')
     ], widget=forms.Select(attrs={"class": "form-control"}))
+    
+    def clean_code_PPR(self):
+        code_PPR = self.cleaned_data.get('code_PPR')
+        if Students.objects.filter(code_PPR=code_PPR).exists():
+            raise forms.ValidationError("This code PPR is already in use.")
+        return code_PPR
 
 
 
