@@ -1,9 +1,8 @@
 
-HEAD
 
 # formation management
 
-This project is a comprehensive Student Management System developed using Python with the Django framework, designed for educational purposes.
+This project is a comprehensive Student Management System developed using Python with the Django framework and mysql as database.
 
 
 ## Features
@@ -31,21 +30,12 @@ Students
 
 
 
-## Prerequisites
-
-- Git: Version control system
-    - Download Git
-- Python: Latest version
-    - Download Python
-- Pip: Python package manager
-    - Pip Installation Guide
 
 ## Installation
 
-1. Create a Directory for the Project
-
+1. Clone the Repository
 ```bash
-  mkdir django-student-management-system
+  git clone https://github.com/yourusername/django-student-management-system.git
   cd django-student-management-system
 ```
 2. Set Up a Virtual Environment
@@ -59,35 +49,19 @@ Students
 ```bash
   venv\Scripts\activate
 ```
-3. Clone the Repository
-```bash
-  git clone https://github.com/yourusername/django-student-management-system.git
-  cd django-student-management-system
-```
-4. Install Project Dependencies
+
+3. Install Project Dependencies
 
 ```bash
   pip install -r requirements.txt
 ```
 
-5. Configure Allowed Hosts in settings.py  (not necessary)
-
-```bash
-  ALLOWED_HOSTS = ['*']
-```
-
-6. Run the Development Server
+4. Run the Development Server
 
 ```bash
   python manage.py runserver
 ```
 
-7. Create a Superuser
-
-```bash
-    python manage.py createsuperuser
-```
-Follow the prompts to set up the superuser credentials.
 
 
 ## Default credentials 
@@ -106,6 +80,10 @@ Follow the prompts to set up the superuser credentials.
 
     - Email:     student@gmail.com
     - Password:  student
+
+![alt text](relative-path-to-your-image)
+
+
 
 ## License
 
