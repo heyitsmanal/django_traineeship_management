@@ -9,20 +9,34 @@ A comprehensive **student and staff management system** built with **Django** an
 ## ✨ Features
 
 ### 👨‍💼 Admin
-- Overview dashboards with statistics and performance charts  
-- Manage students, staff, courses, subjects, and sessions  
-- Monitor attendance and results  
-- Handle staff leave requests and validations  
+
+Overview Dashboards: View summary charts for student performance, staff performance, and course statistics.
+Staff Management: Add, update, and delete staff members.
+Student Management: Add, update, and delete student records.
+Course Management: Add, update, and delete courses.
+Subject Management: Add, update, and delete subjects.
+Session Management: Add, update, and delete academic sessions.
+Attendance Monitoring: View and manage student attendance
+
 
 ### 👩‍🏫 Staff / Teachers
-- Record and update student attendance  
-- Add and manage student results  
-- Access subject and student insights  
+
+Summary Charts: Access charts related to students, subjects, and leave status.
+Attendance Management: Record and update student attendance.
+Results Management: Add and update student results.
+
 
 ### 🎓 Students
-- View personal attendance and grades  
-- Check academic progress through charts  
-- Request leaves and communicate with staff  
+
+Summary Charts: View charts related to attendance, subjects, and leave status.
+Attendance View: Check personal attendance records.
+Results View: Access academic results.
+
+
+
+
+
+  
 
 ---
 
