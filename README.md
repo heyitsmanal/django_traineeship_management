@@ -4,7 +4,7 @@
 
 A comprehensive **student and staff management system** built with **Django** and **MySQL**, designed to handle academic operations such as student registration, attendance, results, and session tracking.
 
----
+
 
 ## ✨ Features
 
@@ -22,7 +22,7 @@ A comprehensive **student and staff management system** built with **Django** an
 - View attendance, grades, and academic performance  
 - Request leaves and communicate with staff  
 
----
+
 
 ## ⚙️ Installation
 
