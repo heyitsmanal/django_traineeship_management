@@ -1,6 +1,6 @@
 from django.db.models import Count
 from django.core.management.base import BaseCommand
-from student_management_app.models import Students, Courses, Group
+from apps.student_management.models import Students, Courses, Group
 import random
 
 class Command(BaseCommand):

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from random import shuffle
-from student_management_app.models import Staffs, Group
+from apps.student_management.models import Staffs, Group
 
 class Command(BaseCommand):
     help = 'Assign staff members to groups randomly'

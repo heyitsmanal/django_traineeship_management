@@ -12,7 +12,7 @@ from django.contrib.staticfiles import finders
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-from student_management_app.models import Certificat, Project, Students
+from apps.student_management.models import Certificat, Project, Students
 
 
 

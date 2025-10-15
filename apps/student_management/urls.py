@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 
 from django.views.i18n import set_language
 
+app_name = "student_management"
 
 urlpatterns = [
     # path('accounts/', include('django.contrib.auth.urls')),
