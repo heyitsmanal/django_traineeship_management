@@ -37,6 +37,8 @@ Results View: Access academic results.
 ## 🖼️ Demo Screenshots
 
 <div align="center">
+  <img src="https://github.com/user-attachments/assets/4f3ee40b-1726-42c1-990b-958aef38ca7a" alt="homepage" width="49%">
+  <br/>
   <img src="https://github.com/user-attachments/assets/2f4f0dfa-98ad-42f0-b576-6bc69871740c" alt="register" width="49%">
   <img src="https://github.com/user-attachments/assets/76283aa8-a6b8-4e06-85b5-4cd612078992" alt="login" width="49%">
   <br/>
@@ -53,8 +55,7 @@ Results View: Access academic results.
   <img src="https://github.com/user-attachments/assets/67bd4605-a1ba-444f-8f4a-991fe2e96e16" alt="admin_manage_groups" width="40%">
   <img src="https://github.com/user-attachments/assets/091f8137-4d68-4468-b0d1-9c75b1a8e701" alt="admin_attendance_report" width="50%">
   </div>
-  <br/>
-  <img src="https://github.com/user-attachments/assets/4f3ee40b-1726-42c1-990b-958aef38ca7a" alt="homepage" width="49%">
+
   
 </div>
 
