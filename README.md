@@ -33,9 +33,6 @@ Attendance View: Check personal attendance records.
 Results View: Access academic results.
 
 
-🖼️ Demo Screenshots
-
-## 🖼️ Demo Screenshots
 
 ## 🖼️ Demo Screenshots
 
