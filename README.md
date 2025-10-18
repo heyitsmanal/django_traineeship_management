@@ -34,6 +34,8 @@ Results View: Access academic results.
 
 
 🖼️ Demo Screenshots
+
+
 <img width="1920" height="838" alt="register" src="https://github.com/user-attachments/assets/2f4f0dfa-98ad-42f0-b576-6bc69871740c" />
 
 <img width="960" height="421" alt="login" src="https://github.com/user-attachments/assets/76283aa8-a6b8-4e06-85b5-4cd612078992" />
