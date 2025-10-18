@@ -49,8 +49,10 @@ Results View: Access academic results.
   <img src="https://github.com/user-attachments/assets/07b6aabe-8ee7-4c1a-80e0-51b87bbfa6c6" alt="admin_home" width="49%">
   <img src="https://github.com/user-attachments/assets/1acb7aaf-a785-4ca7-b8ed-f6d8e02ff54a" alt="admin_group_timetable" width="49%">
   <br/>
-  <img src="https://github.com/user-attachments/assets/67bd4605-a1ba-444f-8f4a-991fe2e96e16" alt="admin_manage_groups" width="49%">
-  <img src="https://github.com/user-attachments/assets/091f8137-4d68-4468-b0d1-9c75b1a8e701" alt="admin_attendance_report" width="60%">
+  <div align="center">
+  <img src="https://github.com/user-attachments/assets/67bd4605-a1ba-444f-8f4a-991fe2e96e16" alt="admin_manage_groups" width="40%">
+  <img src="https://github.com/user-attachments/assets/091f8137-4d68-4468-b0d1-9c75b1a8e701" alt="admin_attendance_report" width="50%">
+  </div>
   <br/>
   <img src="https://github.com/user-attachments/assets/4f3ee40b-1726-42c1-990b-958aef38ca7a" alt="homepage" width="49%">
   
