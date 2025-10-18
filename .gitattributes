@@ -1,4 +1,14 @@
-*.html linguist-detectable=true
-*.css linguist-detectable=true
-*.js linguist-detectable=false
+# Force GitHub Linguist to classify the repo as Python
+*.py linguist-language=Python
 *.py linguist-detectable=true
+
+# Ignore frontend/static assets from language stats
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+*.html linguist-detectable=false
+
+# (Optional) ignore migrations and static folders
+migrations/* linguist-detectable=false
+static/* linguist-detectable=false
+media/* linguist-detectable=false
+templates/* linguist-detectable=false
