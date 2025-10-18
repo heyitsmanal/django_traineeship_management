@@ -1,7 +1,7 @@
 # 🎓 Django Traineeship Management System
 ![Build](https://github.com/heyitsmanal/django_traineeship_management/actions/workflows/python-tests.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-
+![Database](https://img.shields.io/badge/Database-MySQL-blue.svg)
 A comprehensive **student and staff management system** built with **Django** and **MySQL**, designed to streamline academic operations such as student registration, attendance tracking, results management, and session administration.
 
 ---
