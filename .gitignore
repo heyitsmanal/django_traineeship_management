@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual envs
+.venv/
+venv/
+
+# Local databases
+db.sqlite3
+*.sqlite3
+
+# Django collectstatic output (build artifact)
+staticfiles/
+
+# User uploads
+media/
+
+# Env files
+.env
+*.env
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Test/coverage caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log

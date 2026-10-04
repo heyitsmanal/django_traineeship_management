@@ -1,0 +1,110 @@
+{% extends 'student_template/base_template.html' %}
+
+{% block page_title %}
+    {{ student_group_day_of_week }} {{ student_group_category }} Group - Timetable
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        margin-top: 20px;
+        font-family: 'Roboto', sans-serif;
+        background-color: #f8f9fa;
+    }
+    .table-bordered thead th {
+        border-bottom-width: 2px;
+        color: #343a40;
+    }
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6; /* Ensure borders are visible */
+    }
+    .table td, .table th {
+        padding: .75rem;
+        vertical-align: middle;
+    }
+    .schedule-item {
+        background-color: #d3d3d3;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .instructor {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #6c757d;
+    }
+    .time {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .timetable-img {
+        margin-bottom: 30px;
+    }
+    .timetable-img img {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="container">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Course</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% with current_day=None %}
+                                {% for schedule in timetable %}
+                                    <tr>
+                                        {% if current_day != schedule.day_of_week %}
+                                            {% with day_count=0 %}
+                                                {% for item in timetable %}
+                                                    {% if item.day_of_week == schedule.day_of_week %}
+                                                        {% with day_count=day_count|add:1 %}{% endwith %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endwith %}
+                                            <td rowspan="{{ day_count }}">{{ schedule.day_of_week }}</td>
+                                            {% with current_day=schedule.day_of_week %}{% endwith %}
+                                        {% else %}
+                                            <td></td>
+                                        {% endif %}
+                                        <td>{{ schedule.course }}</td>
+                                        <td>{{ schedule.start_time }}</td>
+                                        <td>{{ schedule.end_time }}</td>
+                                        <td>{{ schedule.category }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5">No timetable available.</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endwith %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+{% endblock main_content %}
+
+{% block custom_js %}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% endblock custom_js %}

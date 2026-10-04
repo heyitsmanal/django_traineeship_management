@@ -1,0 +1,152 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block main_content %}
+{% load static %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Total Students -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-info">
+                    <div class="inner ml-4">
+                        <h3>{{ all_student_count }}</h3>
+                        <p>Total Students</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="{% url 'manage_student' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Total Staffs -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner ml-4">
+                        <h3>{{ staff_count }}</h3>
+                        <p>Total Staffs</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="{% url 'manage_staff' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Total Courses -->
+            <div class="col-lg-4 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner ml-4">
+                        <h3>{{ course_count }}</h3>
+                        <p>Total Courses</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                    <a href="{% url 'manage_course' %}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Attendance Rate Chart -->
+            <div class="col-lg-6">
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">Attendance Rate</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="attendanceRateChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Students in Each Grade Chart -->
+            <div class="col-lg-6">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Total Students in Each Grade</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="pieChart2" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock main_content %}
+
+{% block custom_js %}
+<script>
+    $(document).ready(function() {
+        // Chart for Total Students in Each Grade
+        var grade_name_list = {{ grade_name_list|safe }};
+        var student_count_list_in_grade = {{ student_count_list_in_grade|safe }};
+        var pieChartCanvas2 = $('#pieChart2').get(0).getContext('2d');
+        var pieData2 = {
+            labels: grade_name_list,
+            datasets: [{
+                data: student_count_list_in_grade,
+                backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+            }]
+        };
+        var pieOptions2 = {
+            maintainAspectRatio: false,
+            responsive: true,
+        };
+        var pieChart2 = new Chart(pieChartCanvas2, {
+            type: 'pie',
+            data: pieData2,
+            options: pieOptions2
+        });
+
+        // Chart for Attendance Rate
+        var ctx = document.getElementById('attendanceRateChart').getContext('2d');
+        var attendanceRateChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for data in course_attendance_data %}'{{ data.course_name }}',{% endfor %}],
+                datasets: [{
+                    label: 'Attendance Rate (%)',
+                    data: [{% for data in course_attendance_data %}{{ data.attendance_rate }},{% endfor %}],
+                    backgroundColor: 'rgba(60,141,188,0.9)',
+                    borderColor: 'rgba(60,141,188,0.8)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock custom_js %}

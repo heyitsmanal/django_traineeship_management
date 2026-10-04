@@ -1,0 +1,168 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+    View Attendance
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% block style %}
+    <style>
+       
+        
+        .custom-select-wrapper {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            -webkit-appearance: none; /* Remove default styles in Webkit browsers */
+            -moz-appearance: none; /* Remove default styles in Firefox */
+            appearance: none; /* Remove default styles in all other browsers */
+        }
+
+        .custom-select::-ms-expand {
+            display: none; /* Hide dropdown arrow in Internet Explorer and Edge */
+        }
+
+        .custom-select::after {
+            content: "\25BC"; /* Down arrow */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+    </style>
+{% endblock style %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">View Attendance</h3>
+                    </div>
+                    <!-- Display Messages -->
+                    {% if messages %}
+                        <div class="form-group">
+                            <div class="col-12">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div id="course_section">
+                            <div class="form-group">
+                                <label class="mr-5">Select Course</label>
+                                <div class="custom-select-wrapper">
+                                    <select class="custom-select" name="course" id="course">
+                                        {% for course in courses %}
+                                            <option value="{{ course.id }}">{{ course.course_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button id="fetch_attendance" class="btn btn-primary">Fetch Attendance</button>
+                        </div>
+                        <div id="attendance_data_block">
+                            <!-- Attendance data will be inserted here -->
+                        </div>
+                        <div id="no_attendance" style="display:none;" class="alert alert-danger">
+                            No attendance data available.
+                        </div>
+                        <div class="form-group mt-3">
+                            <a href="{% url 'delete_students_with_excessive_absences' %}" class="btn btn-danger">Delete Students with Excessive Absences</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block custom_js %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+        // Fetch Attendance
+        $("#fetch_attendance").click(function() {
+            var data = {
+                course: $("#course").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+            var url = '{% url "admin_get_attendance_courses" %}';
+    
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    $("#attendance_data_block").html(response.html);
+                    if ($("#attendance_data_block").children().length === 0) {
+                        $("#no_attendance").show();
+                    } else {
+                        $("#no_attendance").hide();
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log('Error:', errmsg);
+                    $("#no_attendance").html("Error in fetching data.").show();
+                }
+            });
+        });
+    
+        // Fetch Group Students
+        $(document).on('click', '.view-group', function(e) {
+            e.preventDefault();
+            var groupId = $(this).data('group-id');
+            
+            $.ajax({
+                url: '{% url "admin_get_group_students" %}',
+                type: 'POST',
+                data: {
+                    group: groupId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.html) {
+                        $("#student_data").html(response.html);
+                        $("#student_modal").modal('show');
+                    } else {
+                        $("#student_data").html(response.error);
+                        $("#student_modal").modal('show');
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log('Error:', errmsg);
+                    $("#student_data").html("Error in fetching student data.");
+                    $("#student_modal").modal('show');
+                }
+            });
+        });
+    });
+    
+</script>
+
+{% endblock custom_js %}
+
+{% endblock main_content %}

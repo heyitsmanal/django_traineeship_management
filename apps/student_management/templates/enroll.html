@@ -1,0 +1,122 @@
+{% extends 'base_.html' %}
+{% load static %}
+
+{% block title %}Enroll{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .container-fluid {
+        padding: 0;
+    }
+
+    #hero {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Full viewport height */
+        background-color: #fff; /* Light background color */
+    }
+
+    .hero-content {
+        max-width: 1000px; /* Reduced max width for the content */
+        width: 100%; /* Full width */
+        padding: 10px; /* Reduced padding inside the content */
+        display: flex;
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center; /* Center align items horizontally */
+    }
+
+    .form-container {
+        background-color: #e1e6ea; 
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
+        padding: 25px; 
+        width: 100%; 
+        max-width: 1000px; /* Set a maximum width for the form */
+    }
+
+    h3 {
+        color: black;
+        font-size: 1.25rem; /* Slightly larger font size */
+    }
+
+    input, select, textarea {
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+        padding: .4rem; 
+        font-size: 0.75rem; 
+        line-height: 1.2;
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px; 
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .hero-content {
+            padding: 10px; /* Adjust padding for smaller screens */
+        }
+    }
+</style>
+
+<section id="hero" class="container-fluid">
+    <div class="row hero-content">
+        <div class="col-lg-12"> <!-- Use the full width of the container -->
+            <div class="form-container">
+                <h3 class="mb-4 text-uppercase">Formulaire d'inscription des étudiants</h3>
+
+                <!-- Display form errors -->
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" action="{% url 'enroll_student' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-6 mb-2">
+                                <div class="form-group">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group-buttons">
+                        <button type="reset" class="btn btn-primary btn-sm">Reset</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Soumettre</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section><!-- End Hero -->
+
+{% endblock %}

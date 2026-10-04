@@ -1,0 +1,28 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% load static %}
+
+{% block page_title %}
+    Manage Student
+{% endblock page_title %}
+
+{% block main_content %}
+
+
+
+        <form method="get">
+            {{ form.as_p }}
+            <button type="submit">Search</button>
+        </form>
+
+        {% if students %}
+            <h2>Students</h2>
+            <ul>
+            {% for student in students %}
+                <li>{{ student.name }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+
+            
+{% endblock main_content %}
